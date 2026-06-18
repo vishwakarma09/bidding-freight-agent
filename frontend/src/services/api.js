@@ -1,9 +1,10 @@
 import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin)
+const normalizedBaseURL = (API_URL === '/' || API_URL === '') ? '/api' : `${API_URL}/api`
 
 const api = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: normalizedBaseURL,
   headers: {
     'Content-Type': 'application/json'
   }
