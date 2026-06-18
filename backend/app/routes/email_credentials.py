@@ -17,6 +17,14 @@ def clean_str(val: str) -> str:
     # Strip normal spaces, non-breaking spaces (\xa0), tabs, newlines
     return val.strip().replace(" ", "").replace("\xa0", "").replace("\t", "").replace("\n", "").replace("\r", "")
 
+def check_mailpit_service():
+    import httpx
+    try:
+        r = httpx.get("http://mailpit:8025/api/v1/messages", timeout=2)
+        return r.status_code == 200
+    except Exception:
+        return False
+
 def check_smtp(host: str, port: int, email: str, password: str):
     try:
         host = clean_str(host)
@@ -81,6 +89,7 @@ def save_credentials(
         creds.imap_port = payload.imap_port
         if payload.imap_password != "••••••••••••":
             creds.encrypted_imap_password = encrypt_password(clean_str(payload.imap_password))
+        creds.use_dev_mode = payload.use_dev_mode
     else:
         smtp_pwd = clean_str(payload.smtp_password) if payload.smtp_password != "••••••••••••" else ""
         imap_pwd = clean_str(payload.imap_password) if payload.imap_password != "••••••••••••" else ""
@@ -94,7 +103,8 @@ def save_credentials(
             encrypted_smtp_password=encrypt_password(smtp_pwd),
             imap_host=clean_str(payload.imap_host),
             imap_port=payload.imap_port,
-            encrypted_imap_password=encrypt_password(imap_pwd)
+            encrypted_imap_password=encrypt_password(imap_pwd),
+            use_dev_mode=payload.use_dev_mode
         )
         db.add(creds)
     
@@ -121,6 +131,16 @@ def test_credentials(
     x_user_email: str = Header(..., alias="X-User-Email"),
     db: Session = Depends(get_db)
 ):
+    if payload.use_dev_mode:
+        mailpit_ok = check_mailpit_service()
+        return {
+            "smtp_connected": mailpit_ok,
+            "smtp_error": None if mailpit_ok else "Mailpit service is unreachable inside the Docker container network.",
+            "imap_connected": mailpit_ok,
+            "imap_error": None if mailpit_ok else "Mailpit service is unreachable inside the Docker container network.",
+            "success": mailpit_ok
+        }
+
     existing = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
     
     smtp_password = payload.smtp_password
@@ -167,6 +187,16 @@ def test_existing_credentials(
     creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
     if not creds:
         raise HTTPException(status_code=404, detail="Email credentials not found")
+        
+    if creds.use_dev_mode:
+        mailpit_ok = check_mailpit_service()
+        return {
+            "smtp_connected": mailpit_ok,
+            "smtp_error": None if mailpit_ok else "Mailpit service is unreachable inside the Docker container network.",
+            "imap_connected": mailpit_ok,
+            "imap_error": None if mailpit_ok else "Mailpit service is unreachable inside the Docker container network.",
+            "success": mailpit_ok
+        }
     
     smtp_password = decrypt_password(creds.encrypted_smtp_password)
     imap_password = decrypt_password(creds.encrypted_imap_password)

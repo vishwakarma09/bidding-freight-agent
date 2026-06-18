@@ -47,6 +47,11 @@ async def workflow_timer_loop():
         try:
             db = SessionLocal()
             check_pending_timers(db)
+            
+            # Poll and ingest emails (Mailpit dev mode or real IMAP)
+            from .services.email_service import poll_and_ingest_emails
+            poll_and_ingest_emails(db)
+            
             db.close()
         except Exception as e:
             logger.error(f"Error in background timer tick: {e}")
@@ -71,6 +76,13 @@ def startup_event():
         db.commit()
     except Exception as e:
         logger.error(f"Failed to create database tables: {e}")
+
+    try:
+        logger.info("Altering email_credentials table to add use_dev_mode if not exists...")
+        db.execute(text("ALTER TABLE email_credentials ADD COLUMN IF NOT EXISTS use_dev_mode BOOLEAN DEFAULT FALSE"))
+        db.commit()
+    except Exception as e:
+        logger.warning(f"Could not alter email_credentials table: {e}")
         
     # 2. Seed default Customers and Carriers if tables are empty
     try:

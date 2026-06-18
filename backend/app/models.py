@@ -151,6 +151,14 @@ class EmailCredential(Base):
     imap_host = Column(String(100), nullable=False, default="imap.gmail.com")
     imap_port = Column(Integer, nullable=False, default=993)
     encrypted_imap_password = Column(String(500), nullable=False)
+    use_dev_mode = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+
+class ProcessedEmail(Base):
+    __tablename__ = "processed_emails"
+
+    id = Column(String(255), primary_key=True, index=True)
+    processed_at = Column(DateTime, default=datetime.datetime.utcnow)
 

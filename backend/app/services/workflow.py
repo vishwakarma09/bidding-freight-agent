@@ -186,7 +186,7 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
         """
         send_email(
             to_email=customer_email,
-            subject=f"FREIGHT PROPOSAL: {quote.origin} to {quote.destination} - ${quote.sell_price}",
+            subject=f"FREIGHT PROPOSAL: {quote.origin} to {quote.destination} - ${quote.sell_price} ({quote.id})",
             body_html=customer_body
         )
         

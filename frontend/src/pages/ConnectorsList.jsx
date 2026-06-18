@@ -31,12 +31,16 @@ const ConnectorsList = () => {
   const [showImapPassword, setShowImapPassword] = useState(false)
   const [testingEmail, setTestingEmail] = useState(false)
   const [testResult, setTestResult] = useState(null)
+  const [useDevMode, setUseDevMode] = useState(false)
 
   // Load email credentials from backend on mount
   useEffect(() => {
     getEmailCredentials()
       .then(data => {
         setEmailCreds(data)
+        if (data) {
+          setUseDevMode(data.use_dev_mode || false)
+        }
       })
       .catch(err => {
         if (err.response && err.response.status === 404) {
@@ -78,19 +82,20 @@ const ConnectorsList = () => {
     setTestingEmail(true)
     setTestResult(null)
 
-    const isExisting = smtpPassword === "••••••••••••" && imapPassword === "••••••••••••"
+    const isExisting = smtpPassword === "••••••••••••" && imapPassword === "••••••••••••" && !useDevMode
     
     const testPromise = isExisting
       ? testExistingEmailCredentials()
       : testEmailCredentials({
-          email_provider: emailProvider,
+          email_provider: useDevMode ? "Mailpit" : emailProvider,
           email: emailAddress,
-          smtp_host: smtpHost,
-          smtp_port: parseInt(smtpPort),
-          smtp_password: smtpPassword,
-          imap_host: imapHost,
-          imap_port: parseInt(imapPort),
-          imap_password: imapPassword
+          smtp_host: useDevMode ? "mailpit" : smtpHost,
+          smtp_port: useDevMode ? 1025 : parseInt(smtpPort),
+          smtp_password: useDevMode ? "devmode" : smtpPassword,
+          imap_host: useDevMode ? "mailpit" : imapHost,
+          imap_port: useDevMode ? 143 : parseInt(imapPort),
+          imap_password: useDevMode ? "devmode" : imapPassword,
+          use_dev_mode: useDevMode
         })
 
     testPromise
@@ -117,14 +122,15 @@ const ConnectorsList = () => {
   const handleSaveEmailCreds = (e) => {
     e.preventDefault()
     const payload = {
-      email_provider: emailProvider,
+      email_provider: useDevMode ? "Mailpit" : emailProvider,
       email: emailAddress,
-      smtp_host: smtpHost,
-      smtp_port: parseInt(smtpPort),
-      smtp_password: smtpPassword,
-      imap_host: imapHost,
-      imap_port: parseInt(imapPort),
-      imap_password: imapPassword
+      smtp_host: useDevMode ? "mailpit" : smtpHost,
+      smtp_port: useDevMode ? 1025 : parseInt(smtpPort),
+      smtp_password: useDevMode ? (smtpPassword === "••••••••••••" ? "••••••••••••" : "devmode") : smtpPassword,
+      imap_host: useDevMode ? "mailpit" : imapHost,
+      imap_port: useDevMode ? 143 : parseInt(imapPort),
+      imap_password: useDevMode ? (imapPassword === "••••••••••••" ? "••••••••••••" : "devmode") : imapPassword,
+      use_dev_mode: useDevMode
     }
 
     saveEmailCredentials(payload)
@@ -240,7 +246,7 @@ const ConnectorsList = () => {
               Autonomous Email Ingestion Inbox
               {emailCreds && (
                 <span className="text-[9px] uppercase font-bold tracking-wider text-secondary bg-secondary/10 border border-secondary/20 px-2 py-0.5 rounded-full animate-pulse">
-                  Active
+                  {emailCreds.use_dev_mode ? "Active (Dev Mode)" : "Active"}
                 </span>
               )}
             </h3>
@@ -250,8 +256,14 @@ const ConnectorsList = () => {
             {emailCreds && (
               <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-[11px] font-mono text-primary-fixed-dim bg-black/20 p-3 rounded-lg border border-white/5">
                 <span><strong>Inbox:</strong> {emailCreds.email}</span>
-                <span><strong>SMTP Host:</strong> {emailCreds.smtp_host}:{emailCreds.smtp_port}</span>
-                <span><strong>IMAP Host:</strong> {emailCreds.imap_host}:{emailCreds.imap_port}</span>
+                {emailCreds.use_dev_mode ? (
+                  <span className="text-secondary font-bold"><strong>Dev Mode:</strong> Mailpit Mock Ingestion Active</span>
+                ) : (
+                  <>
+                    <span><strong>SMTP Host:</strong> {emailCreds.smtp_host}:{emailCreds.smtp_port}</span>
+                    <span><strong>IMAP Host:</strong> {emailCreds.imap_host}:{emailCreds.imap_port}</span>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -270,6 +282,7 @@ const ConnectorsList = () => {
                   setImapHost(emailCreds.imap_host)
                   setImapPort(emailCreds.imap_port)
                   setImapPassword("••••••••••••")
+                  setUseDevMode(emailCreds.use_dev_mode || false)
                   setShowEmailModal(true)
                 }}
                 className="text-xs font-bold px-4 py-2 bg-white/5 hover:bg-white/10 text-on-surface rounded-lg border border-white/10 flex items-center gap-1.5 transition-colors"
@@ -294,6 +307,7 @@ const ConnectorsList = () => {
                 setImapHost("imap.gmail.com")
                 setImapPort(993)
                 setImapPassword("")
+                setUseDevMode(false)
                 setShowEmailModal(true)
               }}
               className="text-xs font-bold px-5 py-2.5 rounded-lg bg-primary text-on-primary hover:brightness-110 active:scale-95 transition-all shadow-md flex items-center gap-1.5"
@@ -450,18 +464,44 @@ const ConnectorsList = () => {
             </p>
 
             <form onSubmit={handleSaveEmailCreds} className="flex flex-col gap-5">
-              {/* Provider */}
-              <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Mailbox Provider</label>
-                <select 
-                  value={emailProvider} 
-                  onChange={(e) => setEmailProvider(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-xs text-on-surface focus:outline-none focus:border-primary"
-                >
-                  <option value="Gmail">Gmail (Auto pre-filled hosts)</option>
-                  <option value="Other">Other Custom Mail Server</option>
-                </select>
+              {/* Dev Mode Toggle */}
+              <div className="flex items-center justify-between p-3.5 rounded-xl border border-primary/20 bg-primary/5">
+                <div>
+                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5 cursor-pointer">
+                    <Database size={14} className="text-primary" /> Enable Dev Mode (Use Mailpit)
+                  </label>
+                  <p className="text-[10px] text-on-surface-variant mt-0.5">Routes ingestion to the local mock SMTP / REST container.</p>
+                </div>
+                <input 
+                  type="checkbox"
+                  checked={useDevMode}
+                  onChange={(e) => {
+                    const checked = e.target.checked
+                    setUseDevMode(checked)
+                    if (checked) {
+                      setEmailProvider("Mailpit")
+                    } else {
+                      setEmailProvider("Gmail")
+                    }
+                  }}
+                  className="w-4 h-4 rounded border-white/10 text-primary bg-black/40 focus:ring-primary cursor-pointer"
+                />
               </div>
+
+              {/* Provider */}
+              {!useDevMode && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Mailbox Provider</label>
+                  <select 
+                    value={emailProvider} 
+                    onChange={(e) => setEmailProvider(e.target.value)}
+                    className="w-full bg-black/40 border border-white/10 rounded-xl py-2.5 px-4 text-xs text-on-surface focus:outline-none focus:border-primary"
+                  >
+                    <option value="Gmail">Gmail (Auto pre-filled hosts)</option>
+                    <option value="Other">Other Custom Mail Server</option>
+                  </select>
+                </div>
+              )}
 
               {/* Email Address */}
               <div className="flex flex-col gap-1.5">
@@ -477,106 +517,110 @@ const ConnectorsList = () => {
               </div>
 
               {/* SMTP configuration */}
-              <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-3">
-                <h4 className="text-xs font-bold text-primary flex items-center gap-1.5">
-                  <Server size={12} /> SMTP Config (Outgoing Mail)
-                </h4>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2 flex flex-col gap-1">
-                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP Host</label>
-                    <input 
-                      required
-                      type="text"
-                      disabled={emailProvider === "Gmail"}
-                      value={smtpHost}
-                      onChange={(e) => setSmtpHost(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
-                    />
+              {!useDevMode && (
+                <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-3">
+                  <h4 className="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <Server size={12} /> SMTP Config (Outgoing Mail)
+                  </h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-2 flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP Host</label>
+                      <input 
+                        required
+                        type="text"
+                        disabled={emailProvider === "Gmail"}
+                        value={smtpHost}
+                        onChange={(e) => setSmtpHost(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP Port</label>
+                      <input 
+                        required
+                        type="number"
+                        disabled={emailProvider === "Gmail"}
+                        value={smtpPort}
+                        onChange={(e) => setSmtpPort(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP Port</label>
-                    <input 
-                      required
-                      type="number"
-                      disabled={emailProvider === "Gmail"}
-                      value={smtpPort}
-                      onChange={(e) => setSmtpPort(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
-                    />
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP password / App password</label>
+                    <div className="relative">
+                      <input 
+                        required
+                        type={showSmtpPassword ? "text" : "password"}
+                        value={smtpPassword}
+                        onChange={(e) => setSmtpPassword(e.target.value)}
+                        placeholder="Gmail App Password (16 characters)"
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 pr-10 text-xs text-on-surface"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
+                      >
+                        {showSmtpPassword ? <EyeOff size={12} /> : <Eye size={12} />}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">SMTP password / App password</label>
-                  <div className="relative">
-                    <input 
-                      required
-                      type={showSmtpPassword ? "text" : "password"}
-                      value={smtpPassword}
-                      onChange={(e) => setSmtpPassword(e.target.value)}
-                      placeholder="Gmail App Password (16 characters)"
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 pr-10 text-xs text-on-surface"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowSmtpPassword(!showSmtpPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
-                    >
-                      {showSmtpPassword ? <EyeOff size={12} /> : <Eye size={12} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              )}
 
               {/* IMAP configuration */}
-              <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-3">
-                <h4 className="text-xs font-bold text-primary flex items-center gap-1.5">
-                  <Server size={12} /> IMAP Config (Incoming Mailbox Ingestion)
-                </h4>
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2 flex flex-col gap-1">
-                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP Host</label>
-                    <input 
-                      required
-                      type="text"
-                      disabled={emailProvider === "Gmail"}
-                      value={imapHost}
-                      onChange={(e) => setImapHost(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
-                    />
+              {!useDevMode && (
+                <div className="p-4 rounded-xl border border-white/5 bg-white/[0.01] flex flex-col gap-3">
+                  <h4 className="text-xs font-bold text-primary flex items-center gap-1.5">
+                    <Server size={12} /> IMAP Config (Incoming Mailbox Ingestion)
+                  </h4>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="col-span-2 flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP Host</label>
+                      <input 
+                        required
+                        type="text"
+                        disabled={emailProvider === "Gmail"}
+                        value={imapHost}
+                        onChange={(e) => setImapHost(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP Port</label>
+                      <input 
+                        required
+                        type="number"
+                        disabled={emailProvider === "Gmail"}
+                        value={imapPort}
+                        onChange={(e) => setImapPort(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
+                      />
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP Port</label>
-                    <input 
-                      required
-                      type="number"
-                      disabled={emailProvider === "Gmail"}
-                      value={imapPort}
-                      onChange={(e) => setImapPort(e.target.value)}
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-on-surface disabled:opacity-50"
-                    />
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP password / App password</label>
+                    <div className="relative">
+                      <input 
+                        required
+                        type={showImapPassword ? "text" : "password"}
+                        value={imapPassword}
+                        onChange={(e) => setImapPassword(e.target.value)}
+                        placeholder="Gmail App Password (16 characters)"
+                        className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 pr-10 text-xs text-on-surface"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowImapPassword(!showImapPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
+                      >
+                        {showImapPassword ? <EyeOff size={12} /> : <Eye size={12} />}
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[9px] font-bold text-on-surface-variant uppercase tracking-wider">IMAP password / App password</label>
-                  <div className="relative">
-                    <input 
-                      required
-                      type={showImapPassword ? "text" : "password"}
-                      value={imapPassword}
-                      onChange={(e) => setImapPassword(e.target.value)}
-                      placeholder="Gmail App Password (16 characters)"
-                      className="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 pr-10 text-xs text-on-surface"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowImapPassword(!showImapPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-on-surface"
-                    >
-                      {showImapPassword ? <EyeOff size={12} /> : <Eye size={12} />}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              )}
 
               {/* Verification Feedback Block */}
               {testResult && (
@@ -611,7 +655,7 @@ const ConnectorsList = () => {
                 <button 
                   type="button"
                   onClick={handleTestEmailCreds}
-                  disabled={testingEmail || !emailAddress || !smtpPassword || !imapPassword}
+                  disabled={testingEmail || !emailAddress || (!useDevMode && (!smtpPassword || !imapPassword))}
                   className="text-xs font-semibold text-primary hover:brightness-110 disabled:opacity-40 transition-colors flex items-center gap-1"
                 >
                   <RefreshCw size={14} className={testingEmail ? "animate-spin" : ""} />

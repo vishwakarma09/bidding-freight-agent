@@ -163,6 +163,7 @@ class EmailCredentialCreate(BaseModel):
     imap_host: str = "imap.gmail.com"
     imap_port: int = 993
     imap_password: str
+    use_dev_mode: bool = False
 
 
 class EmailCredentialResponse(BaseModel):
@@ -173,6 +174,7 @@ class EmailCredentialResponse(BaseModel):
     smtp_port: int
     imap_host: str
     imap_port: int
+    use_dev_mode: bool
     created_at: datetime
     updated_at: datetime
 
