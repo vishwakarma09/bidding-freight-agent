@@ -5,9 +5,9 @@ import { ArrowLeft, Save, Users, Mail, Award } from 'lucide-react'
 const CarrierDetails = () => {
   const { carriers, editingCarrierId, setEditingCarrierId, setSelectedTab, handleSaveCarrier } = useApp()
 
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [competitivenessScore, setCompetitivenessScore] = useState(5.0)
+  const [isOverride, setIsOverride] = useState(false)
+  const [simulatedScore, setSimulatedScore] = useState(5.0)
+  const [calculatedScore, setCalculatedScore] = useState(0.0)
 
   useEffect(() => {
     if (editingCarrierId) {
@@ -15,12 +15,16 @@ const CarrierDetails = () => {
       if (carrier) {
         setName(carrier.name || '')
         setEmail(carrier.email || '')
-        setCompetitivenessScore(carrier.competitiveness_score || 0.0)
+        setIsOverride(carrier.is_override || false)
+        setSimulatedScore(carrier.simulated_score || 0.0)
+        setCalculatedScore(carrier.calculated_competitiveness_score || 0.0)
       }
     } else {
       setName('')
       setEmail('')
-      setCompetitivenessScore(5.0)
+      setIsOverride(false)
+      setSimulatedScore(5.0)
+      setCalculatedScore(0.0)
     }
   }, [editingCarrierId, carriers])
 
@@ -35,7 +39,9 @@ const CarrierDetails = () => {
     const payload = {
       name,
       email,
-      competitiveness_score: parseFloat(competitivenessScore)
+      is_override: isOverride,
+      simulated_score: parseFloat(simulatedScore),
+      competitiveness_score: isOverride ? parseFloat(simulatedScore) : parseFloat(calculatedScore)
     }
     handleSaveCarrier(payload)
   }
@@ -109,25 +115,58 @@ const CarrierDetails = () => {
               <Award size={18} />
               <h4 className="font-bold text-sm text-on-surface uppercase tracking-wider">Competitiveness Settings</h4>
             </div>
-            <div className="space-y-4 max-w-md">
-              <div className="space-y-1">
-                <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Competitiveness Score (0.0 - 10.0)</label>
-                  <span className="text-sm font-bold text-primary">{parseFloat(competitivenessScore).toFixed(1)}</span>
+            
+            <div className="space-y-6 max-w-xl">
+              {/* Calculated Score Panel */}
+              <div className="p-4 rounded-xl border border-white/5 bg-white/[0.02] flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Calculated Win-Rate Competitiveness</span>
+                  <p className="text-[11px] text-on-surface-variant/60 mt-0.5">Calculated dynamically based on historical wins relative to total bids.</p>
                 </div>
-                <p className="text-[10px] text-on-surface-variant leading-relaxed mb-2">
-                  Used by the simulation engine to generate bids. A higher score represents a carrier that bids more aggressively (lower prices) and is more likely to win quotes.
-                </p>
-                <input 
-                  type="range" 
-                  min="0.0" 
-                  max="10.0" 
-                  step="0.1"
-                  value={competitivenessScore}
-                  onChange={(e) => setCompetitivenessScore(parseFloat(e.target.value))}
-                  className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
-                />
+                <div className="text-right">
+                  <span className="text-xl font-bold text-secondary">
+                    {editingCarrierId ? `${calculatedScore.toFixed(1)} / 10` : 'N/A'}
+                  </span>
+                </div>
               </div>
+
+              {/* Override Toggle */}
+              <div className="flex items-center justify-between p-4 rounded-xl border border-primary/20 bg-primary/5">
+                <div>
+                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5 cursor-pointer">
+                    <input 
+                      type="checkbox"
+                      checked={isOverride}
+                      onChange={(e) => setIsOverride(e.target.checked)}
+                      className="w-4 h-4 rounded border-white/10 text-primary bg-black/40 focus:ring-primary cursor-pointer mr-2"
+                    />
+                    Override Score for Simulation
+                  </label>
+                  <p className="text-[10px] text-on-surface-variant mt-1">If enabled, the simulated score below will override actual calculated stats for simulations and analytics.</p>
+                </div>
+              </div>
+
+              {/* Simulated Slider (Visible only when override is ON) */}
+              {isOverride && (
+                <div className="space-y-2 p-4 rounded-xl border border-white/5 bg-white/[0.01] animate-fade-in">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Simulated Score (0.0 - 10.0)</label>
+                    <span className="text-sm font-bold text-primary">{parseFloat(simulatedScore).toFixed(1)}</span>
+                  </div>
+                  <p className="text-[10px] text-on-surface-variant leading-relaxed mb-2">
+                    Set a manual bidding aggressiveness score. Higher values simulate more competitive (lower cost) bids.
+                  </p>
+                  <input 
+                    type="range" 
+                    min="0.0" 
+                    max="10.0" 
+                    step="0.1"
+                    value={simulatedScore}
+                    onChange={(e) => setSimulatedScore(parseFloat(e.target.value))}
+                    className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-primary"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -81,18 +81,20 @@ def get_analytics(db: Session = Depends(get_db)):
 
         win_rate_pct = round((wins / total_bids * 100.0), 2) if total_bids > 0 else 0.0
 
-        # Calculate competitiveness score (average bid margin relative to winning bids)
-        # Higher score = lower, more competitive bids.
+        # Update carrier competitiveness score in DB
+        if carrier.is_override:
+            carrier.competitiveness_score = carrier.simulated_score
+            effective_win_rate = carrier.simulated_score * 10.0
+        else:
+            carrier.competitiveness_score = round(win_rate_pct / 10.0, 1)
+            effective_win_rate = win_rate_pct
+            
+        db.commit()
+
+        # Calculate avg_bid for the response
         avg_bid = db.query(func.avg(CarrierBid.bid_amount)).filter(
             CarrierBid.carrier_id == carrier.id
         ).scalar() or 0.0
-
-        competitiveness_score = round(100.0 - (avg_bid / 50.0), 2) if avg_bid > 0 else 0.0
-        competitiveness_score = max(0.0, min(100.0, competitiveness_score)) # Clamp to [0, 100]
-
-        # Update carrier competitiveness score in DB
-        carrier.competitiveness_score = win_rate_pct
-        db.commit()
 
         carrier_stats.append({
             "id": carrier.id,
@@ -100,7 +102,7 @@ def get_analytics(db: Session = Depends(get_db)):
             "email": carrier.email,
             "total_bids": total_bids,
             "wins": wins,
-            "win_rate_pct": win_rate_pct,
+            "win_rate_pct": effective_win_rate,
             "avg_bid": round(float(avg_bid), 2)
         })
 

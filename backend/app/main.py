@@ -84,6 +84,14 @@ def startup_event():
         db.commit()
     except Exception as e:
         logger.warning(f"Could not alter email_credentials table: {e}")
+
+    try:
+        logger.info("Altering carriers table to add is_override and simulated_score if not exists...")
+        db.execute(text("ALTER TABLE carriers ADD COLUMN IF NOT EXISTS is_override BOOLEAN DEFAULT FALSE"))
+        db.execute(text("ALTER TABLE carriers ADD COLUMN IF NOT EXISTS simulated_score DOUBLE PRECISION DEFAULT 0.0"))
+        db.commit()
+    except Exception as e:
+        logger.warning(f"Could not alter carriers table: {e}")
         
     # 2. Seed default Customers and Carriers if tables are empty
     try:

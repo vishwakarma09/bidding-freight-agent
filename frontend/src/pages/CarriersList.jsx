@@ -355,6 +355,11 @@ const CarriersList = () => {
                         }`}>
                           {(carrier.competitiveness_score || 0).toFixed(1)} / 10
                         </span>
+                        {carrier.is_override && (
+                          <span className="text-[9px] uppercase font-bold tracking-wider text-primary bg-primary/10 border border-primary/20 px-2 py-0.5 rounded-full" title="Overridden for simulation">
+                            Overridden
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-5 text-right">

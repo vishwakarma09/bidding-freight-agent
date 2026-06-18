@@ -22,12 +22,15 @@ class CarrierBase(BaseModel):
     name: str
     email: str
     competitiveness_score: float = 0.0
+    is_override: bool = False
+    simulated_score: float = 0.0
 
 class CarrierCreate(CarrierBase):
     pass
 
 class CarrierResponse(CarrierBase):
     id: int
+    calculated_competitiveness_score: float = 0.0
 
     class Config:
         from_attributes = True

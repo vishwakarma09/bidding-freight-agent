@@ -24,6 +24,8 @@ class Carrier(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     competitiveness_score = Column(Float, default=0.0) # calculated based on historical wins
+    is_override = Column(Boolean, default=False, nullable=False)
+    simulated_score = Column(Float, default=0.0, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
