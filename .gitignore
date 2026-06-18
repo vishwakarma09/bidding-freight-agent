@@ -1,0 +1,36 @@
+# Prerequisites
+*.egge-info/
+.eggs/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Node dependencies
+node_modules/
+dist/
+build/
+
+# Local configuration & credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+infra/.env
+
+# Database state
+postgres_data/
+*.db
+*.sqlite
+
+# IDE & OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

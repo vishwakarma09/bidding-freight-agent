@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: freight-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-freight_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-freight_password}
+      POSTGRES_DB: ${POSTGRES_DB:-freight_bidding_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../scripts:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7-alpine
+    container_name: freight-redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: freight-mailpit
+    restart: always
+    ports:
+      - "18025:8025" # Web UI
+      - "10252:1025"   # SMTP Port
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: freight-backend
+    restart: always
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-freight_user}:${POSTGRES_PASSWORD:-freight_password}@postgres:5432/${POSTGRES_DB:-freight_bidding_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      CEREBRAS_API_KEY: ${CEREBRAS_API_KEY}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ../backend:/app
+    depends_on:
+      - postgres
+      - redis
+      - mailpit
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: freight-frontend
+    restart: always
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
