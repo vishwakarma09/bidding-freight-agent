@@ -460,18 +460,37 @@ const Simulator = () => {
                     <option value="REJECTED">Reject</option>
                   </select>
                 </div>
-                <div className="text-[10px] text-on-surface-variant/80 bg-surface-container p-2 rounded-md leading-relaxed h-[42px] overflow-y-auto">
+                <div className="text-xs text-on-surface-variant/80 bg-surface-container p-3 rounded-md leading-relaxed space-y-1">
                   {customerReplyQuoteId ? (
-                    <>
-                      <strong>From: </strong>
-                      {(() => {
-                        const q = quotes.find(quote => quote.id === customerReplyQuoteId);
-                        const c = customers.find(cust => cust.id === q?.customer_id);
-                        return c ? c.name.split(' ')[0] : 'Customer';
-                      })()}
-                    </>
+                    (() => {
+                      const q = quotes.find(quote => quote.id === customerReplyQuoteId);
+                      const c = customers.find(cust => cust.id === q?.customer_id);
+                      const carrier = q?.winning_carrier_id ? carriers.find(car => car.id === q.winning_carrier_id) : null;
+                      return (
+                        <>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-on-surface-variant">Customer:</span>
+                            <span className="text-on-surface font-medium">{c ? c.name : 'Unknown Customer'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-on-surface-variant">Route:</span>
+                            <span className="text-on-surface font-medium">{q?.origin.split(',')[0]} ➔ {q?.destination.split(',')[0]}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold text-on-surface-variant">Lowest Bid:</span>
+                            <span className="text-secondary font-bold">${q?.cost_price} {carrier ? `(${carrier.name.split(' ')[0]})` : ''}</span>
+                          </div>
+                          <div className="flex justify-between border-t border-white/5 pt-1 mt-1">
+                            <span className="font-semibold text-on-surface-variant">Proposed Price:</span>
+                            <span className="text-primary font-bold">${q?.sell_price}</span>
+                          </div>
+                        </>
+                      );
+                    })()
                   ) : (
-                    "Awaiting quote proposals"
+                    <div className="text-center py-4 text-on-surface-variant/60">
+                      Awaiting quote proposals...
+                    </div>
                   )}
                 </div>
               </div>
