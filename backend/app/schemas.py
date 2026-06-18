@@ -152,3 +152,30 @@ class ConnectorResponse(ConnectorBase):
 
     class Config:
         from_attributes = True
+
+
+class EmailCredentialCreate(BaseModel):
+    email_provider: str = "Gmail"
+    email: str
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_password: str
+    imap_host: str = "imap.gmail.com"
+    imap_port: int = 993
+    imap_password: str
+
+
+class EmailCredentialResponse(BaseModel):
+    id: int
+    email_provider: str
+    email: str
+    smtp_host: str
+    smtp_port: int
+    imap_host: str
+    imap_port: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+

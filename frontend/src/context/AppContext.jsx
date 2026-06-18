@@ -132,6 +132,9 @@ export const AppProvider = ({ children }) => {
   const login = (email, password) => {
     setIsAuthenticated(true)
     setUser({ email, name: email.split('@')[0] })
+    if (api.default && api.default.defaults) {
+      api.default.defaults.headers.common['X-User-Email'] = email
+    }
     addNotification("Logged in successfully! Welcome back.", "success")
     setSelectedTab('dashboard')
   }
@@ -139,6 +142,9 @@ export const AppProvider = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false)
     setUser(null)
+    if (api.default && api.default.defaults && api.default.defaults.headers.common['X-User-Email']) {
+      delete api.default.defaults.headers.common['X-User-Email']
+    }
     addNotification("Logged out successfully.", "success")
     setSelectedTab('landing')
   }

@@ -29,4 +29,10 @@ export const getAnalytics = () => api.get('/analytics').then(res => res.data)
 
 export const sendMockEmail = (payload) => api.post('/simulator/send-mock-email', payload).then(res => res.data)
 
+export const getEmailCredentials = () => api.get('/email-credentials').then(res => res.data)
+export const saveEmailCredentials = (payload) => api.post('/email-credentials', payload).then(res => res.data)
+export const deleteEmailCredentials = () => api.delete('/email-credentials').then(res => res.data)
+export const testEmailCredentials = (payload) => api.post('/email-credentials/test', payload).then(res => res.data)
+export const testExistingEmailCredentials = () => api.post('/email-credentials/test-existing').then(res => res.data)
+
 export default api

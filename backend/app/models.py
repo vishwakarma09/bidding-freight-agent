@@ -136,3 +136,21 @@ class Connector(Base):
     status = Column(String, default="CONNECTED", nullable=False) # CONNECTED, DISCONNECTED
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+
+class EmailCredential(Base):
+    __tablename__ = "email_credentials"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_email = Column(String(100), unique=True, index=True, nullable=False)
+    email_provider = Column(String(50), nullable=False, default="Gmail")
+    email = Column(String(100), nullable=False)
+    smtp_host = Column(String(100), nullable=False, default="smtp.gmail.com")
+    smtp_port = Column(Integer, nullable=False, default=587)
+    encrypted_smtp_password = Column(String(500), nullable=False)
+    imap_host = Column(String(100), nullable=False, default="imap.gmail.com")
+    imap_port = Column(Integer, nullable=False, default=993)
+    encrypted_imap_password = Column(String(500), nullable=False)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+

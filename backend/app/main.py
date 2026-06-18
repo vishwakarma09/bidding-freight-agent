@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from .database import engine, Base, SessionLocal
-from .models import Customer, Carrier, Connector
-from .routes import quotes, carriers, customers, simulator, analytics, connectors
+from .models import Customer, Carrier, Connector, EmailCredential
+from .routes import quotes, carriers, customers, simulator, analytics, connectors, email_credentials
 from .services.workflow import check_pending_timers
 
 # Configure logging
@@ -34,6 +34,7 @@ app.include_router(customers.router, prefix="/api")
 app.include_router(simulator.router, prefix="/api")
 app.include_router(analytics.router, prefix="/api")
 app.include_router(connectors.router, prefix="/api")
+app.include_router(email_credentials.router, prefix="/api")
 
 
 async def workflow_timer_loop():
