@@ -141,6 +141,33 @@ export const AppProvider = ({ children }) => {
     }
   }
 
+  const handleFastForwardTimers = async () => {
+    try {
+      const response = await api.fastForwardTimers()
+      addNotification(response.message || "Timers fast-forwarded successfully!")
+      fetchData()
+      return response
+    } catch (err) {
+      console.error("Fast-forward timers failed:", err)
+      addNotification("Failed to fast-forward timers", "error")
+      throw err
+    }
+  }
+
+  const handleResetDatabase = async () => {
+    try {
+      const response = await api.resetSimulatorDatabase()
+      addNotification(response.message || "Database reset successfully!")
+      fetchData()
+      return response
+    } catch (err) {
+      console.error("Database reset failed:", err)
+      addNotification("Failed to reset database", "error")
+      throw err
+    }
+  }
+
+
   const login = (email, password) => {
     localStorage.setItem('userEmail', email)
     setIsAuthenticated(true)
@@ -213,7 +240,10 @@ export const AppProvider = ({ children }) => {
       handleManualOverride,
       handleApproval,
       handleSendMockEmail,
+      handleFastForwardTimers,
+      handleResetDatabase,
       isAuthenticated,
+
       user,
       login,
       logout,

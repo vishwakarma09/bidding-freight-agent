@@ -223,24 +223,27 @@ const AppContent = () => {
 
       {/* Main Content Area */}
       <main className="app-main">
-        <header className="main-header">
-          <div className="header-title-area">
-            <h1 className="header-title">
-              {selectedTab === 'connector_details' 
-                ? 'Connector Configuration' 
-                : privateTabs.find(t => t.id === selectedTab)?.name}
-            </h1>
-            <p className="header-subtitle">
-              Automated competitive carrier bidding & quote pipeline
-            </p>
-          </div>
-          <div className="header-actions">
-            <div className="system-timer">
-              <span className="timer-label">Simulation Speed:</span>
-              <span className="timer-value badge-fast">FAST (1m = 2h)</span>
+        {selectedTab !== 'simulator' && (
+          <header className="main-header">
+            <div className="header-title-area">
+              <h1 className="header-title">
+                {selectedTab === 'connector_details' 
+                  ? 'Connector Configuration' 
+                  : privateTabs.find(t => t.id === selectedTab)?.name}
+              </h1>
+              <p className="header-subtitle">
+                Automated competitive carrier bidding & quote pipeline
+              </p>
             </div>
-          </div>
-        </header>
+            <div className="header-actions">
+              <div className="system-timer">
+                <span className="timer-label">Simulation Speed:</span>
+                <span className="timer-value badge-fast">FAST (1m = 2h)</span>
+              </div>
+            </div>
+          </header>
+        )}
+
 
         <div className="content-viewport">
           {renderActivePage()}
