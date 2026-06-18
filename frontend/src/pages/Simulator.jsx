@@ -8,7 +8,6 @@ const Simulator = () => {
     quotes, 
     carriers, 
     customers, 
-    connectors,
     handleSendMockEmail, 
     handleFastForwardTimers, 
     handleResetDatabase, 
@@ -18,7 +17,7 @@ const Simulator = () => {
 
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0)
   const [activeQuoteId, setActiveQuoteId] = useState('')
-  const [connectorId, setConnectorId] = useState('')
+  const [carrierId, setCarrierId] = useState('')
   const [bidAmount, setBidAmount] = useState('1240')
   
   // State variables for Customer Reply step
@@ -158,13 +157,11 @@ const Simulator = () => {
     }
   }, [awaitingApprovalQuotes, customerReplyQuoteId])
 
-  const activeConnectors = connectors ? connectors.filter(c => c.status === 'CONNECTED') : []
-
   useEffect(() => {
-    if (activeConnectors.length > 0 && !connectorId) {
-      setConnectorId(activeConnectors[0].id.toString())
+    if (carriers.length > 0 && !carrierId) {
+      setCarrierId(carriers[0].id.toString())
     }
-  }, [activeConnectors, connectorId])
+  }, [carriers, carrierId])
 
   const handleTriggerInquiry = async () => {
     const t = templates[selectedTemplateIndex]
@@ -188,8 +185,8 @@ const Simulator = () => {
       return
     }
 
-    const selectedConnector = activeConnectors.find(c => c.id === parseInt(connectorId))
-    if (!selectedConnector) return
+    const selectedCarrier = carriers.find(c => c.id === parseInt(carrierId))
+    if (!selectedCarrier) return
 
     const selectedQuote = quotes.find(q => q.id === activeQuoteId)
     if (!selectedQuote) return
@@ -205,12 +202,12 @@ const Simulator = () => {
       Notes: We can service this lane.
       
       Best,
-      ${selectedConnector.name} pricing desk
+      ${selectedCarrier.name} pricing desk
     `
 
     try {
       await handleSendMockEmail(
-        selectedConnector.contact_email,
+        selectedCarrier.email,
         'broker@dispatch.owera.ca',
         bidSubject,
         bidBody
@@ -402,14 +399,14 @@ const Simulator = () => {
                   </select>
                   <select 
                     className="bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none w-full"
-                    value={connectorId}
-                    onChange={e => setConnectorId(e.target.value)}
+                    value={carrierId}
+                    onChange={e => setCarrierId(e.target.value)}
                   >
-                    {activeConnectors.map(c => (
+                    {carriers.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
-                    {activeConnectors.length === 0 && (
-                      <option value="">No Active Channels</option>
+                    {carriers.length === 0 && (
+                      <option value="">No Registered Carriers</option>
                     )}
                   </select>
                 </div>

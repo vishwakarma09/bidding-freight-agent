@@ -7,8 +7,7 @@ export const AppProvider = ({ children }) => {
   const [quotes, setQuotes] = useState([])
   const [carriers, setCarriers] = useState([])
   const [customers, setCustomers] = useState([])
-  const [connectors, setConnectors] = useState([])
-  const [editingConnectorId, setEditingConnectorId] = useState(null)
+  const [editingCarrierId, setEditingCarrierId] = useState(null)
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeQuote, setActiveQuote] = useState(null)
@@ -41,18 +40,16 @@ export const AppProvider = ({ children }) => {
   const fetchData = async (showLoading = false) => {
     if (showLoading) setLoading(true)
     try {
-      const [qData, cData, custData, aData, connData] = await Promise.all([
+      const [qData, cData, custData, aData] = await Promise.all([
         api.getQuotes(),
         api.getCarriers(),
         api.getCustomers(),
-        api.getAnalytics(),
-        api.getConnectors()
+        api.getAnalytics()
       ])
       setQuotes(qData)
       setCarriers(cData)
       setCustomers(custData)
       setAnalytics(aData)
-      setConnectors(connData)
     } catch (err) {
       console.error("Failed to load application data:", err)
       addNotification("Error loading data from server", "error")
@@ -210,32 +207,32 @@ export const AppProvider = ({ children }) => {
   }
 
 
-  const handleSaveConnector = async (payload) => {
+  const handleSaveCarrier = async (payload) => {
     try {
-      if (editingConnectorId) {
-        await api.updateConnector(editingConnectorId, payload)
-        addNotification("Connector updated successfully!", "success")
+      if (editingCarrierId) {
+        await api.updateCarrier(editingCarrierId, payload)
+        addNotification("Carrier updated successfully!", "success")
       } else {
-        await api.createConnector(payload)
-        addNotification("New connector added successfully!", "success")
+        await api.createCarrier(payload)
+        addNotification("New carrier added successfully!", "success")
       }
-      setEditingConnectorId(null)
+      setEditingCarrierId(null)
       fetchData()
       setSelectedTab('connectors_list')
     } catch (err) {
-      console.error("Failed to save connector:", err)
-      addNotification("Failed to save connector", "error")
+      console.error("Failed to save carrier:", err)
+      addNotification("Failed to save carrier", "error")
     }
   }
 
-  const handleDeleteConnector = async (id) => {
+  const handleDeleteCarrier = async (id) => {
     try {
-      await api.deleteConnector(id)
-      addNotification("Connector deleted successfully!", "success")
+      await api.deleteCarrier(id)
+      addNotification("Carrier deleted successfully!", "success")
       fetchData()
     } catch (err) {
-      console.error("Failed to delete connector:", err)
-      addNotification("Failed to delete connector", "error")
+      console.error("Failed to delete carrier:", err)
+      addNotification("Failed to delete carrier", "error")
     }
   }
 
@@ -244,9 +241,8 @@ export const AppProvider = ({ children }) => {
       quotes,
       carriers,
       customers,
-      connectors,
-      editingConnectorId,
-      setEditingConnectorId,
+      editingCarrierId,
+      setEditingCarrierId,
       analytics,
       loading,
       activeQuote,
@@ -268,8 +264,8 @@ export const AppProvider = ({ children }) => {
       login,
       loginWithGoogle,
       logout,
-      handleSaveConnector,
-      handleDeleteConnector
+      handleSaveCarrier,
+      handleDeleteCarrier
 
     }}>
       {children}

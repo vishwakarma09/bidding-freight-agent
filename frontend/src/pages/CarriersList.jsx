@@ -8,13 +8,12 @@ import {
   testExistingEmailCredentials 
 } from '../services/api'
 import { 
-  Plus, Edit2, Trash2, Mail, MessageSquare, Phone, Network, 
-  AlertCircle, CheckCircle, Database, Shield, Activity, 
-  Server, Eye, EyeOff, RefreshCw, AlertTriangle 
+  Plus, Edit2, Trash2, Mail, CheckCircle, Database, Shield, Activity, 
+  Server, Eye, EyeOff, RefreshCw, AlertTriangle, Users, Award, AlertCircle
 } from 'lucide-react'
 
-const ConnectorsList = () => {
-  const { connectors, setEditingConnectorId, setSelectedTab, handleDeleteConnector, addNotification } = useApp()
+const CarriersList = () => {
+  const { carriers, setEditingCarrierId, setSelectedTab, handleDeleteCarrier, addNotification } = useApp()
 
   // Email SMTP/IMAP Setup State
   const [emailCreds, setEmailCreds] = useState(null)
@@ -52,30 +51,21 @@ const ConnectorsList = () => {
   }, [])
 
   const handleEdit = (id) => {
-    setEditingConnectorId(id)
+    setEditingCarrierId(id)
     setSelectedTab('connector_details')
   }
 
   const handleAdd = () => {
-    setEditingConnectorId(null)
+    setEditingCarrierId(null)
     setSelectedTab('connector_details')
   }
 
   // Calculate statistics
-  const totalConnectors = connectors.length
-  const connectedCount = connectors.filter(c => c.status === 'CONNECTED').length
-  const emailChannelCount = connectors.filter(c => c.channel.toLowerCase() === 'email').length
-
-  const getChannelIcon = (channel) => {
-    switch (channel.toLowerCase()) {
-      case 'email':
-        return <Mail size={16} className="text-primary" />
-      case 'whatsapp':
-        return <MessageSquare size={16} className="text-secondary" />
-      default:
-        return <Phone size={16} className="text-tertiary" />
-    }
-  }
+  const totalCarriers = carriers.length
+  const avgCompetitiveness = carriers.length > 0 
+    ? (carriers.reduce((sum, c) => sum + (c.competitiveness_score || 0), 0) / carriers.length).toFixed(1)
+    : '0.0'
+  const activeInboxes = carriers.length // all carriers have configured emails in database
 
   // Handle email credentials verification test
   const handleTestEmailCreds = () => {
@@ -181,14 +171,14 @@ const ConnectorsList = () => {
       {/* Page Actions Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-on-surface">Connectors Hub</h2>
-          <p className="text-sm text-on-surface-variant mt-1">Configure automated communication nodes for carriers and forwarders.</p>
+          <h2 className="text-2xl font-bold text-on-surface">Carriers Hub</h2>
+          <p className="text-sm text-on-surface-variant mt-1">Configure automated communication and manage carriers for bidding.</p>
         </div>
         <button
           onClick={handleAdd}
           className="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:brightness-110 active:scale-95 transition-all neon-glow-primary flex items-center gap-2"
         >
-          <Plus size={16} /> Add Connector
+          <Plus size={16} /> Add Carrier
         </button>
       </div>
 
@@ -196,21 +186,21 @@ const ConnectorsList = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-bento-gap">
         <div className="glass-card rounded-2xl p-6 bg-surface-container-low/30 border border-white/5 backdrop-blur-md flex items-center gap-4">
           <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 text-primary">
-            <Network size={20} />
+            <Users size={20} />
           </div>
           <div>
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Total Connectors</span>
-            <span className="text-2xl font-bold text-on-surface block mt-1">{totalConnectors}</span>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Total Bidding Carriers</span>
+            <span className="text-2xl font-bold text-on-surface block mt-1">{totalCarriers}</span>
           </div>
         </div>
 
         <div className="glass-card rounded-2xl p-6 bg-surface-container-low/30 border border-white/5 backdrop-blur-md flex items-center gap-4">
           <div className="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center border border-secondary/20 text-secondary">
-            <CheckCircle size={20} />
+            <Award size={20} />
           </div>
           <div>
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Active / Connected</span>
-            <span className="text-2xl font-bold text-on-surface block mt-1">{connectedCount}</span>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Avg Competitiveness</span>
+            <span className="text-2xl font-bold text-on-surface block mt-1">{avgCompetitiveness} / 10</span>
           </div>
         </div>
 
@@ -219,8 +209,8 @@ const ConnectorsList = () => {
             <Mail size={20} />
           </div>
           <div>
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Email Ingestion</span>
-            <span className="text-2xl font-bold text-on-surface block mt-1">{emailChannelCount} Nodes</span>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider block">Bidding Inboxes</span>
+            <span className="text-2xl font-bold text-on-surface block mt-1">{activeInboxes} Inboxes</span>
           </div>
         </div>
 
@@ -235,7 +225,7 @@ const ConnectorsList = () => {
         </div>
       </div>
 
-      {/* INGESTION EMAIL CONFIGURATION CARD (job-apply-ai style) */}
+      {/* INGESTION EMAIL CONFIGURATION CARD */}
       <div className="glass-card p-8 rounded-2xl border border-white/5 bg-surface-container-low/10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white shadow-md">
@@ -318,85 +308,68 @@ const ConnectorsList = () => {
         </div>
       </div>
 
-      {/* Main Connectors Table/Grid */}
+      {/* Main Carriers Table */}
       <div className="glass-card rounded-2xl overflow-hidden border border-white/5 bg-surface-container-low/20 backdrop-blur-md">
         <div className="p-6 border-b border-white/5 bg-white/2 flex justify-between items-center">
-          <h3 className="font-bold text-on-surface text-base">Configured Connection Channels</h3>
-          <span className="text-xs text-on-surface-variant/60 font-semibold uppercase tracking-wider">AES-256 ENCRYPTED INBOUNDS</span>
+          <h3 className="font-bold text-on-surface text-base">Bidding Carrier Network</h3>
+          <span className="text-xs text-on-surface-variant/60 font-semibold uppercase tracking-wider">DATABASE-SYNCHRONIZED CARRIERS</span>
         </div>
 
         <div className="overflow-x-auto">
-          {connectors.length === 0 ? (
+          {carriers.length === 0 ? (
             <div className="p-12 text-center text-on-surface-variant flex flex-col items-center justify-center gap-3">
               <AlertCircle size={36} className="text-on-surface-variant/40" />
-              <p className="text-base font-semibold">No Connectors Configured</p>
-              <p className="text-sm">Click "Add Connector" to configure your first inbound automated quoting channel.</p>
+              <p className="text-base font-semibold">No Carriers Registered</p>
+              <p className="text-sm">Click "Add Carrier" to register your first bidding carrier.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-white/5 bg-white/2 text-on-surface-variant text-[10px] uppercase font-bold tracking-wider">
-                  <th className="px-6 py-4">Connector / Company</th>
-                  <th className="px-6 py-4">Channel</th>
-                  <th className="px-6 py-4">Contact Info</th>
-                  <th className="px-6 py-4">Filtering Keywords</th>
-                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">Carrier Name</th>
+                  <th className="px-6 py-4">Bidding Contact Email</th>
+                  <th className="px-6 py-4">Competitiveness Score</th>
                   <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {connectors.map((connector) => (
-                  <tr key={connector.id} className="hover:bg-white/2 transition-colors group">
+                {carriers.map((carrier) => (
+                  <tr key={carrier.id} className="hover:bg-white/2 transition-colors group animate-fade-in">
                     <td className="px-6 py-5">
-                      <div className="font-semibold text-on-surface">{connector.name}</div>
-                      <div className="text-xs text-on-surface-variant mt-0.5">{connector.company_name || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-5">
-                      <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/5 text-xs text-on-surface-variant capitalize">
-                        {getChannelIcon(connector.channel)}
-                        {connector.channel}
+                      <div className="font-semibold text-on-surface flex items-center gap-2">
+                        <Users size={14} className="text-primary-fixed-dim" />
+                        {carrier.name}
                       </div>
                     </td>
                     <td className="px-6 py-5">
-                      <div className="text-xs text-on-surface">{connector.contact_name || 'No contact'}</div>
-                      <div className="text-[10px] text-on-surface-variant mt-0.5">{connector.contact_email}</div>
-                    </td>
-                    <td className="px-6 py-5 max-w-xs">
-                      {connector.filtering_keywords ? (
-                        <div className="flex flex-wrap gap-1">
-                          {connector.filtering_keywords.split(',').map((kw, idx) => (
-                            <span key={idx} className="px-2 py-0.5 rounded bg-primary/10 border border-primary/20 text-[9px] text-primary font-semibold">
-                              {kw.trim()}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-xs text-on-surface-variant/40">No keywords (matches all)</span>
-                      )}
+                      <div className="text-xs text-on-surface-variant font-mono">{carrier.email}</div>
                     </td>
                     <td className="px-6 py-5">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                        connector.status === 'CONNECTED' 
-                          ? 'bg-secondary/10 text-secondary border border-secondary/20' 
-                          : 'bg-white/5 text-on-surface-variant border border-white/5'
-                      }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${connector.status === 'CONNECTED' ? 'bg-secondary animate-pulse' : 'bg-on-surface-variant/40'}`}></span>
-                        {connector.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`px-2.5 py-0.5 rounded text-xs font-semibold ${
+                          (carrier.competitiveness_score || 0) >= 7.0 
+                            ? 'bg-secondary/10 text-secondary border border-secondary/20'
+                            : (carrier.competitiveness_score || 0) >= 4.0
+                            ? 'bg-primary/10 text-primary border border-primary/20'
+                            : 'bg-white/5 text-on-surface-variant border border-white/5'
+                        }`}>
+                          {(carrier.competitiveness_score || 0).toFixed(1)} / 10
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => handleEdit(connector.id)}
+                          onClick={() => handleEdit(carrier.id)}
                           className="p-1.5 rounded-lg hover:bg-white/5 text-on-surface-variant hover:text-primary transition-all duration-150"
-                          title="Edit Connector"
+                          title="Edit Carrier"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => handleDeleteConnector(connector.id)}
+                          onClick={() => handleDeleteCarrier(carrier.id)}
                           className="p-1.5 rounded-lg hover:bg-error/10 text-on-surface-variant hover:text-error transition-all duration-150"
-                          title="Delete Connector"
+                          title="Delete Carrier"
                         >
                           <Trash2 size={14} />
                         </button>
@@ -417,7 +390,7 @@ const ConnectorsList = () => {
             <Database size={20} />
           </div>
           <div>
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase block">Carrier Streams</span>
+            <span className="text-[10px] font-bold text-on-surface-variant uppercase block">Bidding Streams</span>
             <span className="text-base font-bold text-on-surface mt-0.5">14.2 GB /mo throughput</span>
           </div>
         </div>
@@ -443,7 +416,7 @@ const ConnectorsList = () => {
         </div>
       </div>
 
-      {/* EMAIL SMTP/IMAP MODAL FORM (job-apply-ai style) */}
+      {/* EMAIL SMTP/IMAP MODAL FORM */}
       {showEmailModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm overflow-y-auto">
           <div className="w-full max-w-lg glass-panel p-8 rounded-3xl border border-white/10 flex flex-col gap-6 relative my-8 bg-surface-container">
@@ -692,4 +665,4 @@ const ConnectorsList = () => {
   )
 }
 
-export default ConnectorsList
+export default CarriersList

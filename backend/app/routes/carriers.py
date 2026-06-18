@@ -22,3 +22,24 @@ def create_carrier(carrier: CarrierCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_carrier)
     return db_carrier
+
+@router.put("/{carrier_id}", response_model=CarrierResponse)
+def update_carrier(carrier_id: int, carrier: CarrierCreate, db: Session = Depends(get_db)):
+    db_carrier = db.query(Carrier).filter(Carrier.id == carrier_id).first()
+    if not db_carrier:
+        raise HTTPException(status_code=404, detail="Carrier not found")
+    db_carrier.name = carrier.name
+    db_carrier.email = carrier.email
+    db_carrier.competitiveness_score = carrier.competitiveness_score
+    db.commit()
+    db.refresh(db_carrier)
+    return db_carrier
+
+@router.delete("/{carrier_id}")
+def delete_carrier(carrier_id: int, db: Session = Depends(get_db)):
+    db_carrier = db.query(Carrier).filter(Carrier.id == carrier_id).first()
+    if not db_carrier:
+        raise HTTPException(status_code=404, detail="Carrier not found")
+    db.delete(db_carrier)
+    db.commit()
+    return {"detail": "Carrier deleted successfully"}

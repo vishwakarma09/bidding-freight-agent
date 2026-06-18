@@ -122,22 +122,6 @@ class StateTransition(Base):
     quote = relationship("FreightQuote", back_populates="transitions")
 
 
-class Connector(Base):
-    __tablename__ = "connectors"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    company_name = Column(String, nullable=True)
-    contact_email = Column(String, nullable=False)
-    contact_phone = Column(String, nullable=True)
-    contact_name = Column(String, nullable=True)
-    contact_role = Column(String, nullable=True)
-    channel = Column(String, default="email", nullable=False) # email, sms, whatsapp
-    filtering_keywords = Column(Text, nullable=True)
-    status = Column(String, default="CONNECTED", nullable=False) # CONNECTED, DISCONNECTED
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
-
 
 class EmailCredential(Base):
     __tablename__ = "email_credentials"

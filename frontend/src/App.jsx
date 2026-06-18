@@ -4,8 +4,8 @@ import LandingPage from './pages/LandingPage'
 import PricingPage from './pages/PricingPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import ConnectorsList from './pages/ConnectorsList'
-import ConnectorDetails from './pages/ConnectorDetails'
+import CarriersList from './pages/CarriersList'
+import CarrierDetails from './pages/CarrierDetails'
 import Dashboard from './pages/Dashboard'
 import Billing from './pages/Billing'
 import Analytics from './pages/Analytics'
@@ -95,7 +95,7 @@ const AppContent = () => {
 
   const privateTabs = [
     { id: 'dashboard', name: 'Freight Pipeline', icon: LayoutDashboard },
-    { id: 'connectors_list', name: 'Connectors Hub', icon: Network },
+    { id: 'connectors_list', name: 'Carriers Hub', icon: Network },
     { id: 'analytics', name: 'Analytics Center', icon: BarChart3 },
     { id: 'simulator', name: 'Email Simulator', icon: Mail },
     { id: 'billing', name: 'Billing Ledger', icon: Receipt }
@@ -125,9 +125,9 @@ const AppContent = () => {
       case 'simulator':
         return <Simulator />
       case 'connectors_list':
-        return <ConnectorsList />
+        return <CarriersList />
       case 'connector_details':
-        return <ConnectorDetails />
+        return <CarrierDetails />
       default:
         return <LandingPage />
     }
@@ -228,7 +228,7 @@ const AppContent = () => {
             <div className="header-title-area">
               <h1 className="header-title">
                 {selectedTab === 'connector_details' 
-                  ? 'Connector Configuration' 
+                  ? 'Carrier Configuration' 
                   : privateTabs.find(t => t.id === selectedTab)?.name}
               </h1>
               <p className="header-subtitle">

@@ -18,13 +18,11 @@ export const manualOverride = (id, to_status, notes) => api.post(`/quotes/${id}/
 export const getHistoricalRag = (id) => api.get(`/quotes/${id}/historical-rag`).then(res => res.data)
 
 export const getCarriers = () => api.get('/carriers').then(res => res.data)
-export const getCustomers = () => api.get('/customers').then(res => res.data)
+export const createCarrier = (payload) => api.post('/carriers', payload).then(res => res.data)
+export const updateCarrier = (id, payload) => api.put(`/carriers/${id}`, payload).then(res => res.data)
+export const deleteCarrier = (id) => api.delete(`/carriers/${id}`).then(res => res.data)
 
-export const getConnectors = () => api.get('/connectors').then(res => res.data)
-export const getConnector = (id) => api.get(`/connectors/${id}`).then(res => res.data)
-export const createConnector = (payload) => api.post('/connectors', payload).then(res => res.data)
-export const updateConnector = (id, payload) => api.put(`/connectors/${id}`, payload).then(res => res.data)
-export const deleteConnector = (id) => api.delete(`/connectors/${id}`).then(res => res.data)
+export const getCustomers = () => api.get('/customers').then(res => res.data)
 
 export const getAnalytics = () => api.get('/analytics').then(res => res.data)
 
