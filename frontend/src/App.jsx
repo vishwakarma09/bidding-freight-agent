@@ -1,23 +1,55 @@
 import React from 'react'
 import { AppProvider, useApp } from './context/AppContext'
+import LandingPage from './pages/LandingPage'
+import PricingPage from './pages/PricingPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ConnectorsList from './pages/ConnectorsList'
+import ConnectorDetails from './pages/ConnectorDetails'
 import Dashboard from './pages/Dashboard'
 import Billing from './pages/Billing'
 import Analytics from './pages/Analytics'
 import Simulator from './pages/Simulator'
-import { LayoutDashboard, Receipt, BarChart3, Mail, Bell, RefreshCw } from 'lucide-react'
+import { LayoutDashboard, Receipt, BarChart3, Mail, Bell, RefreshCw, Network, LogOut, ExternalLink } from 'lucide-react'
 
 const AppContent = () => {
-  const { selectedTab, setSelectedTab, notifications, loading, fetchData } = useApp()
+  const { selectedTab, setSelectedTab, notifications, loading, fetchData, isAuthenticated, logout } = useApp()
 
-  const tabs = [
+  const publicTabs = ['landing', 'pricing', 'login', 'register']
+  const isPublicPage = publicTabs.includes(selectedTab)
+
+  React.useEffect(() => {
+    if (isPublicPage || !isAuthenticated) {
+      document.body.classList.add('public-body')
+    } else {
+      document.body.classList.remove('public-body')
+    }
+    return () => document.body.classList.remove('public-body')
+  }, [isPublicPage, isAuthenticated])
+
+  const privateTabs = [
     { id: 'dashboard', name: 'Freight Pipeline', icon: LayoutDashboard },
-    { id: 'billing', name: 'Billing & Reconciliation', icon: Receipt },
-    { id: 'analytics', name: 'Analytics Hub', icon: BarChart3 },
-    { id: 'simulator', name: 'Email Simulator', icon: Mail }
+    { id: 'connectors_list', name: 'Connectors Hub', icon: Network },
+    { id: 'analytics', name: 'Analytics Center', icon: BarChart3 },
+    { id: 'simulator', name: 'Email Simulator', icon: Mail },
+    { id: 'billing', name: 'Billing Ledger', icon: Receipt }
   ]
 
   const renderActivePage = () => {
+    // Auth Guard: redirect unauthenticated users to landing
+    if (!isAuthenticated && !isPublicPage) {
+      return <LandingPage />
+    }
+
     switch (selectedTab) {
+      case 'landing':
+        return <LandingPage />
+      case 'pricing':
+        return <PricingPage />
+      case 'login':
+        return <LoginPage />
+      case 'register':
+        return <RegisterPage />
       case 'dashboard':
         return <Dashboard />
       case 'billing':
@@ -26,11 +58,34 @@ const AppContent = () => {
         return <Analytics />
       case 'simulator':
         return <Simulator />
+      case 'connectors_list':
+        return <ConnectorsList />
+      case 'connector_details':
+        return <ConnectorDetails />
       default:
-        return <Dashboard />
+        return <LandingPage />
     }
   }
 
+  // Render Public Layout (No Sidebar)
+  if (isPublicPage || (!isAuthenticated && !isPublicPage)) {
+    return (
+      <div className="public-layout">
+        {/* Toast Notifications */}
+        <div className="toast-container">
+          {notifications.map(n => (
+            <div key={n.id} className={`toast-card ${n.type}`}>
+              <Bell className="toast-icon" size={16} />
+              <span className="toast-msg">{n.message}</span>
+            </div>
+          ))}
+        </div>
+        {renderActivePage()}
+      </div>
+    )
+  }
+
+  // Render Private Dashboard Layout (With Sidebar)
   return (
     <div className="app-container">
       {/* Toast Notifications */}
@@ -46,21 +101,22 @@ const AppContent = () => {
       {/* Sidebar Navigation */}
       <aside className="app-sidebar">
         <div className="sidebar-brand">
-          <div className="brand-logo">AP</div>
+          <div className="brand-logo">CF</div>
           <div className="brand-details">
-            <span className="brand-name">AMZ PREP</span>
-            <span className="brand-sub">Freight Engine</span>
+            <span className="brand-name">CARGOFLUX</span>
+            <span className="brand-sub">Mission Control</span>
           </div>
         </div>
 
         <nav className="sidebar-nav">
-          {tabs.map(tab => {
+          {privateTabs.map(tab => {
             const Icon = tab.icon
+            const isActive = selectedTab === tab.id || (tab.id === 'connectors_list' && selectedTab === 'connector_details')
             return (
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`nav-item ${selectedTab === tab.id ? 'active' : ''}`}
+                className={`nav-item ${isActive ? 'active' : ''}`}
               >
                 <Icon className="nav-icon" size={18} />
                 <span>{tab.name}</span>
@@ -69,12 +125,30 @@ const AppContent = () => {
           })}
         </nav>
 
-        <div className="sidebar-footer">
+        <div className="sidebar-footer space-y-2 px-4 py-3 border-t border-white/5">
+          <button 
+            onClick={() => setSelectedTab('landing')}
+            className="w-full flex items-center gap-2 py-2 px-3 text-xs text-on-surface-variant hover:text-primary transition-colors hover:bg-white/5 rounded-lg"
+          >
+            <ExternalLink size={14} />
+            <span>Go to Landing</span>
+          </button>
+          
+          <button 
+            onClick={logout}
+            className="w-full flex items-center gap-2 py-2 px-3 text-xs text-on-surface-variant hover:text-error transition-colors hover:bg-white/5 rounded-lg"
+          >
+            <LogOut size={14} />
+            <span>Logout</span>
+          </button>
+          
+          <div className="h-4"></div>
+          
           <div className="status-indicator online">
             <div className="status-dot"></div>
             <span>Dev API Online</span>
           </div>
-          <button className="sync-button" onClick={() => fetchData(true)} disabled={loading}>
+          <button className="sync-button w-full" onClick={() => fetchData(true)} disabled={loading}>
             <RefreshCw className={`sync-icon ${loading ? 'spinning' : ''}`} size={14} />
             <span>Force Sync</span>
           </button>
@@ -86,7 +160,9 @@ const AppContent = () => {
         <header className="main-header">
           <div className="header-title-area">
             <h1 className="header-title">
-              {tabs.find(t => t.id === selectedTab)?.name}
+              {selectedTab === 'connector_details' 
+                ? 'Connector Configuration' 
+                : privateTabs.find(t => t.id === selectedTab)?.name}
             </h1>
             <p className="header-subtitle">
               Automated competitive carrier bidding & quote pipeline

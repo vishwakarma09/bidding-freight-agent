@@ -7,12 +7,16 @@ export const AppProvider = ({ children }) => {
   const [quotes, setQuotes] = useState([])
   const [carriers, setCarriers] = useState([])
   const [customers, setCustomers] = useState([])
+  const [connectors, setConnectors] = useState([])
+  const [editingConnectorId, setEditingConnectorId] = useState(null)
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeQuote, setActiveQuote] = useState(null)
   const [historicalRag, setHistoricalRag] = useState([])
-  const [selectedTab, setSelectedTab] = useState('dashboard')
+  const [selectedTab, setSelectedTab] = useState('landing')
   const [notifications, setNotifications] = useState([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [user, setUser] = useState(null)
 
   const addNotification = (message, type = 'success') => {
     const id = Date.now()
@@ -25,16 +29,18 @@ export const AppProvider = ({ children }) => {
   const fetchData = async (showLoading = false) => {
     if (showLoading) setLoading(true)
     try {
-      const [qData, cData, custData, aData] = await Promise.all([
+      const [qData, cData, custData, aData, connData] = await Promise.all([
         api.getQuotes(),
         api.getCarriers(),
         api.getCustomers(),
-        api.getAnalytics()
+        api.getAnalytics(),
+        api.getConnectors()
       ])
       setQuotes(qData)
       setCarriers(cData)
       setCustomers(custData)
       setAnalytics(aData)
+      setConnectors(connData)
     } catch (err) {
       console.error("Failed to load application data:", err)
       addNotification("Error loading data from server", "error")
@@ -44,13 +50,20 @@ export const AppProvider = ({ children }) => {
   }
 
   useEffect(() => {
+    const publicTabs = ['landing', 'pricing', 'login', 'register']
+    const isPublicPage = publicTabs.includes(selectedTab)
+
+    if (!isAuthenticated || isPublicPage) {
+      return
+    }
+
     fetchData(true)
     // Set up auto-refresh polling every 5 seconds to show state machine progress
     const interval = setInterval(() => {
       fetchData(false)
     }, 5000)
     return () => clearInterval(interval)
-  }, [])
+  }, [isAuthenticated, selectedTab])
 
   const selectQuote = async (id) => {
     if (!id) {
@@ -116,11 +129,57 @@ export const AppProvider = ({ children }) => {
     }
   }
 
+  const login = (email, password) => {
+    setIsAuthenticated(true)
+    setUser({ email, name: email.split('@')[0] })
+    addNotification("Logged in successfully! Welcome back.", "success")
+    setSelectedTab('dashboard')
+  }
+
+  const logout = () => {
+    setIsAuthenticated(false)
+    setUser(null)
+    addNotification("Logged out successfully.", "success")
+    setSelectedTab('landing')
+  }
+
+  const handleSaveConnector = async (payload) => {
+    try {
+      if (editingConnectorId) {
+        await api.updateConnector(editingConnectorId, payload)
+        addNotification("Connector updated successfully!", "success")
+      } else {
+        await api.createConnector(payload)
+        addNotification("New connector added successfully!", "success")
+      }
+      setEditingConnectorId(null)
+      fetchData()
+      setSelectedTab('connectors_list')
+    } catch (err) {
+      console.error("Failed to save connector:", err)
+      addNotification("Failed to save connector", "error")
+    }
+  }
+
+  const handleDeleteConnector = async (id) => {
+    try {
+      await api.deleteConnector(id)
+      addNotification("Connector deleted successfully!", "success")
+      fetchData()
+    } catch (err) {
+      console.error("Failed to delete connector:", err)
+      addNotification("Failed to delete connector", "error")
+    }
+  }
+
   return (
     <AppContext.Provider value={{
       quotes,
       carriers,
       customers,
+      connectors,
+      editingConnectorId,
+      setEditingConnectorId,
       analytics,
       loading,
       activeQuote,
@@ -133,7 +192,13 @@ export const AppProvider = ({ children }) => {
       selectQuote,
       handleManualOverride,
       handleApproval,
-      handleSendMockEmail
+      handleSendMockEmail,
+      isAuthenticated,
+      user,
+      login,
+      logout,
+      handleSaveConnector,
+      handleDeleteConnector
     }}>
       {children}
     </AppContext.Provider>

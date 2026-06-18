@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connector Configuration | CargoFlux</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#8c909f",
+                        "surface": "#0b1326",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "inverse-surface": "#dae2fd",
+                        "on-secondary": "#003824",
+                        "background": "#0b1326",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#004395",
+                        "surface-dim": "#0b1326",
+                        "surface-container-high": "#222a3d",
+                        "tertiary-container": "#ca8100",
+                        "secondary": "#4edea3",
+                        "surface-container-lowest": "#060e20",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-container-highest": "#2d3449",
+                        "surface-container-low": "#131b2e",
+                        "surface-tint": "#adc6ff",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-error-container": "#ffdad6",
+                        "surface-bright": "#31394d",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "tertiary": "#ffb95f",
+                        "surface-variant": "#2d3449",
+                        "inverse-primary": "#005ac2",
+                        "on-tertiary": "#472a00",
+                        "outline-variant": "#424754",
+                        "inverse-on-surface": "#283044",
+                        "secondary-container": "#00a572",
+                        "on-primary": "#002e6a",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#adc6ff",
+                        "on-primary-container": "#00285d",
+                        "primary-container": "#4d8eff",
+                        "on-surface": "#dae2fd",
+                        "on-background": "#dae2fd",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary-container": "#3e2400",
+                        "surface-container": "#171f33",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-error": "#690005",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-container": "#00311f",
+                        "secondary-fixed": "#6ffbbe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "bento-gap": "20px",
+                        "gutter": "16px",
+                        "mobile-margin": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(77, 142, 255, 0.4);
+        }
+        .neon-glow:hover {
+            box-shadow: 0 0 25px rgba(77, 142, 255, 0.6);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(77, 142, 255, 0.3);
+            border-radius: 10px;
+        }
+        .grid-pattern {
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), 
+                              linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- Background Decoration -->
+<div class="fixed inset-0 grid-pattern pointer-events-none z-0"></div>
+<div class="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[-10%] left-[-10%] w-[30%] h-[30%] bg-secondary/5 blur-[100px] rounded-full pointer-events-none"></div>
+<div class="flex min-h-screen relative z-10">
+<!-- Sidebar Navigation -->
+<aside class="docked left-0 h-screen w-64 bg-surface-container-low/50 dark:bg-surface-container-low/50 backdrop-blur-xl border-r border-white/10 shadow-md flex flex-col p-gutter hidden md:flex shrink-0">
+<div class="flex items-center gap-3 mb-10">
+<img alt="CargoFlux Logo" class="w-10 h-10 rounded-md" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-on-surface dark:text-on-surface leading-tight">CargoFlux</h1>
+<p class="text-[10px] uppercase tracking-widest text-secondary font-bold">Mission Control</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 p-3 transition-colors text-on-surface-variant dark:text-on-surface-variant hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span>Freight Pipeline</span>
+</a>
+<a class="flex items-center gap-3 p-3 transition-colors text-secondary dark:text-secondary font-bold bg-secondary/10 rounded-lg active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span>Connectors Hub</span>
+</a>
+<a class="flex items-center gap-3 p-3 transition-colors text-on-surface-variant dark:text-on-surface-variant hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Analytics Center</span>
+</a>
+<a class="flex items-center gap-3 p-3 transition-colors text-on-surface-variant dark:text-on-surface-variant hover:bg-white/5 rounded-lg" href="#">
+<span class="material-symbols-outlined">simulation</span>
+<span>System Simulator</span>
+</a>
+</nav>
+<div class="pt-6 border-t border-white/5">
+<a class="flex items-center gap-3 p-3 text-on-surface-variant hover:bg-white/5 rounded-lg transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-container-padding h-16 w-full bg-surface/50 dark:bg-surface/50 backdrop-blur-xl border-b border-white/5 flex-shrink-0">
+<div class="flex flex-col">
+<nav class="flex items-center gap-2 text-[10px] font-label-md text-on-surface-variant uppercase tracking-wider mb-0.5">
+<span class="hover:text-secondary cursor-pointer transition-colors">Connectors Hub</span>
+<span class="material-symbols-outlined text-[12px]">chevron_right</span>
+<span class="text-secondary/80">Edit Connector</span>
+</nav>
+<h2 class="font-headline-md text-headline-md text-on-surface">Connector Configuration</h2>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center gap-6 font-label-md text-label-md">
+<a class="text-on-surface-variant hover:text-on-surface transition-opacity" href="#">Network</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-opacity" href="#">API Docs</a>
+<a class="text-on-surface-variant hover:text-on-surface transition-opacity" href="#">Status</a>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full border border-secondary/30 overflow-hidden ml-2">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a logistics manager in a modern, high-tech control room with soft ambient blue lighting. The style is cinematic and high-definition, reflecting a premium dark-themed professional atmosphere with sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSNAJSYqIY-E3TDA3ND3CUKzfQZXBb25FZD0LiwpudOzh9yytPEO-JFHzIrKUbV1aFYr9WImBpO-CM5VgVxaEONsDuNj-XnMByE-fDhLw_zTl1Gia-mph1pm4UmR5N3VT9pYnofhrLuFAdccv85T9fTnKgnthBa9N8xT5cV4MMrdSJPrQI9oH40OSgx4spcqaRQkmNCpUAaXbPS5BMj3vLxee_-GaYhMw-qFC7Bwgxv9w2u9aoxbHmE_OpTuvN7guXW6VdGiN-YlY"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Scrollable Content -->
+<section class="flex-1 overflow-y-auto custom-scrollbar p-10 flex flex-col items-center">
+<!-- Main Form Card -->
+<div class="w-full max-w-4xl glass-panel rounded-xl overflow-hidden mb-12 border-t-2 border-t-primary-container/20">
+<div class="p-8 border-b border-white/5 bg-white/5 flex items-center justify-between">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Universal Node 402-B</h3>
+<p class="text-on-surface-variant text-body-sm">Last synchronized: 2 mins ago</p>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-secondary/10 border border-secondary/20 rounded-full">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="text-secondary font-label-md text-label-md">CONNECTED</span>
+</div>
+</div>
+<div class="p-8 space-y-10">
+<!-- Section 1: Basic Information -->
+<section>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-[20px]">info</span>
+<h4 class="font-headline-md text-[18px] text-on-surface">Basic Information</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Connector Name</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" type="text" value="Apex Global Logistics"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Company Name</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" placeholder="Enter full legal name" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Contact Email</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" type="email" value="ops@apex-logistics.io"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Contact Phone Number</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" placeholder="+1 (555) 000-0000" type="tel"/>
+</div>
+</div>
+</section>
+<!-- Section 2: Personal Contact Information -->
+<section>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-[20px]">person</span>
+<h4 class="font-headline-md text-[18px] text-on-surface">Personal Contact Information</h4>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Contact Name</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" type="text" value="Elena Rodriguez"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase tracking-tighter">Contact Role</label>
+<input class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none" type="text" value="Senior Logistics Coordinator"/>
+</div>
+</div>
+</section>
+<!-- Section 3: Communication Channel -->
+<section>
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-[20px]">send</span>
+<h4 class="font-headline-md text-[18px] text-on-surface">Communication Channel</h4>
+</div>
+<div class="bg-surface-container-lowest p-2 rounded-xl flex gap-2 border border-white/5 max-w-md">
+<button class="flex-1 py-3 px-4 rounded-lg bg-primary-container text-on-primary-container font-bold transition-all shadow-lg flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">mail</span> Email
+                                </button>
+<button class="flex-1 py-3 px-4 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">sms</span> SMS
+                                </button>
+<button class="flex-1 py-3 px-4 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">chat</span> WhatsApp
+                                </button>
+</div>
+</section>
+<!-- Section 4: Email Ingestion & Filtering -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">filter_list</span>
+<h4 class="font-headline-md text-[18px] text-on-surface">Email Ingestion &amp; Filtering</h4>
+</div>
+<div class="flex items-center gap-2 text-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-[16px]">warning</span>
+<span class="text-label-md font-label-md">Case-sensitive matching enabled</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="relative">
+<textarea class="w-full bg-surface-container-lowest border border-white/10 rounded-lg px-4 py-3 focus:border-primary-container focus:ring-1 focus:ring-primary-container/30 transition-all text-on-surface outline-none resize-none" rows="4">LTL, pallets, weight, class, hazardous, expedited, priority_1</textarea>
+<div class="absolute bottom-3 right-3 text-on-surface-variant/30 text-body-sm font-label-md">
+                                        CSV FORMAT
+                                    </div>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-md text-primary text-label-md font-label-md flex items-center gap-1">
+                                        LTL <span class="material-symbols-outlined text-[12px] cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-md text-primary text-label-md font-label-md flex items-center gap-1">
+                                        pallets <span class="material-symbols-outlined text-[12px] cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-primary/10 border border-primary/20 rounded-md text-primary text-label-md font-label-md flex items-center gap-1">
+                                        hazardous <span class="material-symbols-outlined text-[12px] cursor-pointer">close</span>
+</span>
+<span class="px-3 py-1 bg-tertiary/10 border border-tertiary/20 rounded-md text-tertiary text-label-md font-label-md flex items-center gap-1">
+                                        priority_1 <span class="material-symbols-outlined text-[12px] cursor-pointer">close</span>
+</span>
+<button class="px-3 py-1 border border-dashed border-white/20 rounded-md text-on-surface-variant text-label-md font-label-md hover:border-primary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">add</span> Add Keyword
+                                    </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Actions -->
+<div class="p-8 border-t border-white/5 bg-white/2 flex justify-between items-center">
+<div class="flex items-center gap-2 text-on-surface-variant/50">
+<span class="material-symbols-outlined text-[16px]">verified_user</span>
+<span class="text-label-md font-label-md">AES-256 Encrypted Stream</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 rounded-lg text-on-surface-variant font-bold border border-white/10 hover:bg-white/5 transition-all active:scale-95">
+                                Cancel
+                            </button>
+<button class="neon-glow px-8 py-2.5 rounded-lg bg-primary-container text-on-primary-container font-bold transition-all active:scale-95 flex items-center gap-2 group">
+                                Save Changes
+                                <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Auxiliary Information / Status -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+<div class="glass-panel p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary">database</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-label-md font-label-md uppercase">Data Throughput</p>
+<p class="text-headline-md font-bold">14.2 GB <span class="text-secondary text-body-sm font-normal">/mo</span></p>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">speed</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-label-md font-label-md uppercase">Avg. Latency</p>
+<p class="text-headline-md font-bold">12ms <span class="text-primary text-body-sm font-normal">rt</span></p>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-xl flex items-center gap-4">
+<div class="w-12 h-12 bg-tertiary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary">shield</span>
+</div>
+<div>
+<p class="text-on-surface-variant text-label-md font-label-md uppercase">Health Check</p>
+<p class="text-headline-md font-bold">99.9% <span class="text-tertiary text-body-sm font-normal">uptime</span></p>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<!-- Mobile Bottom Navigation -->
+<div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-surface-container-low/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-around px-gutter z-50">
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">timeline</span>
+<span class="text-[10px]">Pipeline</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-secondary">
+<span class="material-symbols-outlined">hub</span>
+<span class="text-[10px]">Connectors</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">analytics</span>
+<span class="text-[10px]">Analytics</span>
+</button>
+<button class="flex flex-col items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined">settings</span>
+<span class="text-[10px]">Settings</span>
+</button>
+</div>
+<script>
+        // Micro-interactions and subtle hover effects
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('focus', () => {
+                el.parentElement.querySelector('label').classList.replace('text-on-surface-variant', 'text-secondary');
+            });
+            el.addEventListener('blur', () => {
+                el.parentElement.querySelector('label').classList.replace('text-secondary', 'text-on-surface-variant');
+            });
+        });
+
+        // Communication channel selection logic
+        const buttons = document.querySelectorAll('.bg-surface-container-lowest button');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => {
+                    b.classList.remove('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-lg');
+                    b.classList.add('text-on-surface-variant', 'hover:bg-white/5');
+                });
+                btn.classList.add('bg-primary-container', 'text-on-primary-container', 'font-bold', 'shadow-lg');
+                btn.classList.remove('text-on-surface-variant', 'hover:bg-white/5');
+            });
+        });
+    </script>
+</body></html>

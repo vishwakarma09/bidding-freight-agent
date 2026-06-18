@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CargoFlux | Freight Pipeline</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#adc6ff",
+                        "on-primary": "#002e6a",
+                        "surface-dim": "#0b1326",
+                        "on-tertiary-container": "#3e2400",
+                        "tertiary": "#ffb95f",
+                        "secondary": "#4edea3",
+                        "surface-container-lowest": "#060e20",
+                        "outline-variant": "#424754",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-background": "#dae2fd",
+                        "surface-variant": "#2d3449",
+                        "secondary-fixed-dim": "#4edea3",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#00311f",
+                        "outline": "#8c909f",
+                        "primary-fixed": "#d8e2ff",
+                        "on-surface-variant": "#c2c6d6",
+                        "surface-container-low": "#131b2e",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-bright": "#31394d",
+                        "on-error-container": "#ffdad6",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff",
+                        "primary-container": "#4d8eff",
+                        "tertiary-container": "#ca8100",
+                        "surface-container-high": "#222a3d",
+                        "on-tertiary": "#472a00",
+                        "on-primary-container": "#00285d",
+                        "inverse-surface": "#dae2fd",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container": "#171f33",
+                        "inverse-primary": "#005ac2",
+                        "secondary-container": "#00a572",
+                        "surface": "#0b1326",
+                        "surface-container-highest": "#2d3449",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-error": "#690005",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-surface": "#dae2fd",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-secondary": "#003824",
+                        "background": "#0b1326",
+                        "inverse-on-surface": "#283044"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "mobile-margin": "16px",
+                        "container-padding": "24px",
+                        "bento-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b1326;
+            color: #dae2fd;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 20px;
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(173, 198, 255, 0.2);
+        }
+        .neon-glow-btn {
+            box-shadow: 0 0 15px rgba(77, 142, 255, 0.4);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(173, 198, 255, 0.2);
+            border-radius: 10px;
+        }
+        .kanban-col {
+            min-width: 280px;
+            flex: 1;
+        }
+        .pipeline-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.15;
+            background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLuxsm_UtvwVRdXldvCPxmrIQmdZPXSQRwE9gyrdsV_k2n_RdUizOiKj3_iCNmgIP0TS7y6Ix3cenDXN5Gr3wh-5fUXD_tNaKlfe23QdjgkcIpGOA76lsfdIKh2N5Sl5o9lLMO-mUyjQ5YPT9r5yTUmlxjRSkOJXaODOZiuTUXGqHhVdYuy4WVsKMq50iUBNMmzd5Gezlgjuw60g_jtdXhZ3re6GotcyYOOUWLnGic3Gne83qphh-qEpO6w');
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) brightness(0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex">
+<div class="pipeline-bg"></div>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-72 flex flex-col p-4 space-y-4 backdrop-blur-xl border-r border-white/10 bg-surface-container/80 z-50">
+<div class="flex items-center gap-3 px-2 mb-8">
+<img alt="CargoFlux Logo" class="w-10 h-10 rounded-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">CargoFlux</h1>
+<p class="font-label-md text-label-md text-on-surface-variant opacity-70">Mission Control</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<!-- Active Navigation -->
+<a class="flex items-center gap-3 px-4 py-3 text-primary bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(173,198,255,0.2)] transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="conveyor_belt">conveyor_belt</span>
+<span class="font-label-md text-label-md">Freight Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md rounded-xl transition-all duration-300 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-label-md text-label-md">Connectors Hub</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md rounded-xl transition-all duration-300 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Analytics Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:text-on-surface hover:bg-white/5 hover:backdrop-blur-md rounded-xl transition-all duration-300 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-label-md text-label-md">System Simulator</span>
+</a>
+</nav>
+<div class="pt-4 border-t border-white/5">
+<a class="flex items-center gap-3 px-4 py-3 text-error/80 hover:text-error hover:bg-error/5 rounded-xl transition-all duration-300 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-72 relative min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-16 px-8 sticky top-0 z-40 backdrop-blur-md border-b border-white/5 bg-surface/30">
+<div class="flex items-center gap-4 flex-1 max-w-xl">
+<div class="relative w-full group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="w-full bg-black/20 border border-white/10 rounded-full py-2 pl-10 pr-4 text-body-sm focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all" placeholder="Search pipeline, quotes, or carriers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-white/5 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-white/5">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-white/5">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="flex items-center gap-3 border-l border-white/10 pl-6">
+<div class="text-right">
+<p class="font-label-md text-label-md font-bold text-on-surface">Cmdr. Sterling</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest">Fleet Operations</p>
+</div>
+<img class="w-10 h-10 rounded-full border-2 border-primary/20" data-alt="A professional headshot of a futuristic logistics fleet commander with a focused expression, wearing a dark navy technical uniform with subtle glowing blue accents. The background is a clean, out-of-focus mission control room with holographic data displays in cool blues and greys. Professional studio lighting, sharp focus, cinematic depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYjMyWrv22zdtwujmZqUpWkxbO-AgiJh1-97ybRzeqLk_YBAHk46OVDU0jscn-41RFETp0u79VM2XjVIIZqa-fY1jjncYfPzsIqtgiw7s0d_59lE6GYs0WR8_wjcsSX1sYszbRN5imivsblnHVehikCBx3C4xWfNrQT_qfjWhH4r-3pI4HjNTVmDfIIeHEiBFt24jZON1hBAk7d1Upuej5a_R7lYIkP3CfHakBTQDKONiZnim8tyXWXmiD4BUog-60hKrtAKB29Mg"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-8">
+<!-- Header Section -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="flex items-center gap-3 mb-2">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Freight Pipeline</h2>
+<span class="bg-primary/20 text-primary border border-primary/30 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest flex items-center gap-1 neon-glow-primary">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
+                            SIMULATION SPEED: FAST
+                        </span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Automated competitive carrier bidding & quote pipeline</p>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-xl flex items-center gap-2 hover:opacity-90 transition-all neon-glow-btn active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+                    NEW QUOTE REQUEST
+                </button>
+</div>
+<!-- Metrics Row -->
+<div class="grid grid-cols-4 gap-bento-gap mb-8">
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg" data-icon="payments">payments</span>
+<span class="text-[10px] text-primary font-bold">LIVE</span>
+</div>
+<h3 class="text-on-surface-variant font-label-md text-label-md mb-1">Outstanding Receivables</h3>
+<p class="font-headline-md text-headline-md text-on-surface">$45,200</p>
+<div class="absolute -right-4 -bottom-4 opacity-5">
+<span class="material-symbols-outlined text-8xl">account_balance_wallet</span>
+</div>
+</div>
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-tertiary bg-tertiary/10 p-2 rounded-lg" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[10px] text-tertiary font-bold">PENDING</span>
+</div>
+<h3 class="text-on-surface-variant font-label-md text-label-md mb-1">Active Payables</h3>
+<p class="font-headline-md text-headline-md text-on-surface">$38,500</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-lg" data-icon="trending_up">trending_up</span>
+<span class="text-[10px] text-secondary font-bold">+2.4%</span>
+</div>
+<h3 class="text-on-surface-variant font-label-md text-label-md mb-1">Gross Margin Earned</h3>
+<p class="font-headline-md text-headline-md text-on-surface">$6,700</p>
+<p class="text-secondary text-[12px] mt-1 font-semibold">15% Avg Markup</p>
+</div>
+<div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-lg" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] text-primary font-bold">OPTIMAL</span>
+</div>
+<h3 class="text-on-surface-variant font-label-md text-label-md mb-1">Proposal Conversion %</h3>
+<p class="font-headline-md text-headline-md text-on-surface">78%</p>
+</div>
+</div>
+<!-- Kanban Board -->
+<div class="flex gap-bento-gap overflow-x-auto pb-8 custom-scrollbar">
+<!-- Intake Column -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant/30"></span>
+                            Intake <span class="text-[10px] opacity-50 ml-1">2</span>
+</h4>
+</div>
+<div class="glass-panel p-4 rounded-xl border-l-4 border-primary transition-all hover:scale-[1.02] cursor-pointer">
+<div class="flex justify-between mb-3">
+<span class="font-bold text-[12px] text-primary">Q-1005</span>
+<span class="bg-primary/10 text-primary text-[10px] px-2 py-0.5 rounded font-bold">NEW</span>
+</div>
+<p class="font-bold text-body-sm text-on-surface mb-1">Stark Industries</p>
+<p class="text-[12px] text-on-surface-variant mb-3">NY to San Francisco</p>
+<div class="flex justify-between items-center pt-3 border-t border-white/5">
+<span class="text-[11px] text-on-surface-variant">2,400 lbs | Cl 70</span>
+<span class="font-bold text-primary">$1,250</span>
+</div>
+</div>
+</div>
+<!-- Out to Carriers -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-primary uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Out to Carriers <span class="text-[10px] opacity-50 ml-1">3</span>
+</h4>
+</div>
+<div class="glass-panel p-4 rounded-xl border-l-4 border-primary transition-all hover:scale-[1.02] cursor-pointer" onclick="openModal()">
+<div class="flex justify-between mb-3">
+<span class="font-bold text-[12px] text-primary">Q-1004</span>
+<span class="bg-primary/20 text-primary text-[10px] px-2 py-0.5 rounded font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[12px]">timer</span> 1m 24s
+                            </span>
+</div>
+<p class="font-bold text-body-sm text-on-surface mb-1">Global Logistics</p>
+<p class="text-[12px] text-on-surface-variant mb-3">Los Angeles to Chicago</p>
+<div class="flex justify-between items-center pt-3 border-t border-white/5">
+<span class="text-[11px] text-on-surface-variant">15,000 lbs | Cl 100</span>
+<span class="text-primary italic animate-pulse text-[11px]">Bidding...</span>
+</div>
+</div>
+</div>
+<!-- Re-Bid Round -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-tertiary uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                            Re-Bid Round <span class="text-[10px] opacity-50 ml-1">1</span>
+</h4>
+</div>
+<div class="glass-panel p-4 rounded-xl border-l-4 border-tertiary transition-all hover:scale-[1.02] cursor-pointer">
+<div class="flex justify-between mb-3">
+<span class="font-bold text-[12px] text-tertiary">Q-0998</span>
+<span class="bg-tertiary/10 text-tertiary text-[10px] px-2 py-0.5 rounded font-bold">ROUND 2</span>
+</div>
+<p class="font-bold text-body-sm text-on-surface mb-1">Omni Consumer Prod.</p>
+<p class="text-[12px] text-on-surface-variant mb-3">Detroit to Austin</p>
+<div class="flex justify-between items-center pt-3 border-t border-white/5">
+<span class="text-[11px] text-on-surface-variant">8,500 lbs | Cl 92</span>
+<span class="font-bold text-tertiary">$3,840</span>
+</div>
+</div>
+</div>
+<!-- Awaiting Approval -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface"></span>
+                            Awaiting Approval <span class="text-[10px] opacity-50 ml-1">2</span>
+</h4>
+</div>
+<div class="p-8 text-center border-2 border-dashed border-white/5 rounded-2xl">
+<p class="text-on-surface-variant/30 text-body-sm italic">Drag quotes here</p>
+</div>
+</div>
+<!-- Approved -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-secondary uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                            Approved <span class="text-[10px] opacity-50 ml-1">14</span>
+</h4>
+</div>
+<div class="glass-panel p-4 rounded-xl border-l-4 border-secondary transition-all hover:scale-[1.02] cursor-pointer">
+<div class="flex justify-between mb-3">
+<span class="font-bold text-[12px] text-secondary">Q-1001</span>
+<span class="bg-secondary/10 text-secondary text-[10px] px-2 py-0.5 rounded font-bold">FINALIZED</span>
+</div>
+<p class="font-bold text-body-sm text-on-surface mb-1">Wayne Enterprises</p>
+<p class="text-[12px] text-on-surface-variant mb-3">Gotham to Seattle</p>
+<div class="flex justify-between items-center pt-3 border-t border-white/5">
+<span class="text-[11px] text-on-surface-variant">42,000 lbs | Cl 60</span>
+<span class="font-bold text-secondary">$5,200</span>
+</div>
+</div>
+</div>
+<!-- Lost -->
+<div class="kanban-col flex flex-col gap-4">
+<div class="flex items-center justify-between px-2">
+<h4 class="font-label-md text-label-md text-error uppercase tracking-widest flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>
+                            Lost <span class="text-[10px] opacity-50 ml-1">5</span>
+</h4>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-md items-center justify-center hidden" id="modal-overlay">
+<div class="glass-panel max-w-4xl w-full max-h-[90vh] rounded-3xl overflow-hidden flex flex-col shadow-2xl scale-95 transition-transform" id="modal-content">
+<!-- Modal Header -->
+<div class="p-6 border-b border-white/10 flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="description">description</span>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Quote Details: Q-1004</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Global Logistics | LAX -> ORD | 15,000 lbs</p>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-2 bg-white/5 rounded-full transition-colors" onclick="closeModal()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
+<!-- Top Row Specs -->
+<div class="grid grid-cols-3 gap-6">
+<div class="bg-black/20 p-4 rounded-xl">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Equipment</p>
+<p class="font-bold text-on-surface">Dry Van - 53ft</p>
+</div>
+<div class="bg-black/20 p-4 rounded-xl">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Hazardous</p>
+<p class="font-bold text-on-surface">No</p>
+</div>
+<div class="bg-black/20 p-4 rounded-xl">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Target Price</p>
+<p class="font-bold text-primary">$4,850.00</p>
+</div>
+</div>
+<!-- RAG Similarity Section -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[16px]">psychology</span>
+                        PGVECTOR RAG LANE SIMILARITY
+                    </h4>
+<div class="bg-primary/5 border border-primary/20 rounded-2xl p-6 flex items-center justify-between">
+<div class="flex gap-8">
+<div>
+<p class="text-[10px] text-primary/70 uppercase mb-1">Similarity Score</p>
+<p class="font-headline-md text-headline-md text-primary">94.2%</p>
+</div>
+<div class="border-l border-primary/20 pl-8">
+<p class="text-[10px] text-primary/70 uppercase mb-1">Historical Avg</p>
+<p class="font-headline-md text-headline-md text-on-surface">$4,912</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="bg-primary text-on-primary text-[10px] px-3 py-1 rounded-full font-bold">CONFIDENCE: HIGH</span>
+<p class="text-[11px] text-primary/60 mt-2">Based on 1,248 similar lane records</p>
+</div>
+</div>
+</div>
+<!-- Carrier Bid List -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface uppercase tracking-widest mb-4">ACTIVE CARRIER BIDS</h4>
+<div class="space-y-3">
+<div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:border-primary/30 transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">SwiftTrans Express</p>
+<p class="text-[11px] text-on-surface-variant">Rating: 4.9/5 | 102 Completed</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-secondary">$4,750</p>
+<p class="text-[10px] text-on-surface-variant">Expires in 12m</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Blue Line Freight</p>
+<p class="text-[11px] text-on-surface-variant">Rating: 4.7/5 | 88 Completed</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$4,900</p>
+<p class="text-[10px] text-on-surface-variant">Expires in 45m</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl opacity-60 grayscale">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary" data-icon="local_shipping">local_shipping</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Apex Global Carriers</p>
+<p class="text-[11px] text-on-surface-variant">Rating: 4.5/5 | 24 Completed</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold text-on-surface">$5,120</p>
+<p class="text-[10px] text-on-surface-variant">Rejected (Price)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Modal Footer/Actions -->
+<div class="p-6 border-t border-white/10 bg-black/20 flex gap-4 justify-end">
+<button class="px-6 py-3 rounded-xl font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">
+                    Manual Override
+                </button>
+<button class="px-6 py-3 rounded-xl font-label-md text-label-md border border-error/30 text-error hover:bg-error/5 transition-colors">
+                    Reject All Bids
+                </button>
+<button class="px-8 py-3 rounded-xl font-label-md text-label-md bg-secondary text-on-secondary font-bold hover:brightness-110 transition-all shadow-[0_0_15px_rgba(78,222,163,0.3)]">
+                    Approve Bid ($4,750)
+                </button>
+</div>
+</div>
+</div>
+<script>
+        function openModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+            setTimeout(() => {
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }, 200);
+        }
+
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Close modal on background click
+        document.getElementById('modal-overlay').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal-overlay')) closeModal();
+        });
+    </script>
+</body></html>
+

@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from .database import engine, Base, SessionLocal
-from .models import Customer, Carrier
-from .routes import quotes, carriers, customers, simulator, analytics
+from .models import Customer, Carrier, Connector
+from .routes import quotes, carriers, customers, simulator, analytics, connectors
 from .services.workflow import check_pending_timers
 
 # Configure logging
@@ -33,6 +33,7 @@ app.include_router(carriers.router, prefix="/api")
 app.include_router(customers.router, prefix="/api")
 app.include_router(simulator.router, prefix="/api")
 app.include_router(analytics.router, prefix="/api")
+app.include_router(connectors.router, prefix="/api")
 
 
 async def workflow_timer_loop():
@@ -92,6 +93,46 @@ def startup_event():
                 Carrier(name="Old Dominion", email="carrier_od@mailpit.local", competitiveness_score=0.0)
             ]
             db.add_all(carriers)
+            db.commit()
+
+        if db.query(Connector).count() == 0:
+            logger.info("Seeding default connectors FedEx, UPS, DHL...")
+            connectors_list = [
+                Connector(
+                    name="Apex Global Logistics",
+                    company_name="Apex Global Logistics Inc.",
+                    contact_email="ops@apex-logistics.io",
+                    contact_phone="+1 (555) 000-0000",
+                    contact_name="Elena Rodriguez",
+                    contact_role="Senior Logistics Coordinator",
+                    channel="email",
+                    filtering_keywords="LTL, pallets, weight, class, hazardous, expedited, priority_1",
+                    status="CONNECTED"
+                ),
+                Connector(
+                    name="FedEx Direct Feed",
+                    company_name="FedEx Freight",
+                    contact_email="carrier_fedex@mailpit.local",
+                    contact_phone="+1 (800) 463-3339",
+                    contact_name="Mark Smith",
+                    contact_role="Integration Lead",
+                    channel="email",
+                    filtering_keywords="LTL, pallets, weight, priority",
+                    status="CONNECTED"
+                ),
+                Connector(
+                    name="DHL Global Connect",
+                    company_name="DHL Express",
+                    contact_email="carrier_dhl@mailpit.local",
+                    contact_phone="+1 (800) 225-5345",
+                    contact_name="Sarah Jenkins",
+                    contact_role="Support Manager",
+                    channel="email",
+                    filtering_keywords="air freight, pallet, weight, hazmat",
+                    status="CONNECTED"
+                )
+            ]
+            db.add_all(connectors_list)
             db.commit()
     except Exception as e:
         logger.error(f"Failed to seed initial data: {e}")

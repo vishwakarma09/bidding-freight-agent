@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CargoFlux System Simulator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1326;
+            color: #dae2fd;
+        }
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(173, 198, 255, 0.3);
+        }
+        .cargo-progress {
+            position: relative;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .cargo-progress-fill {
+            height: 100%;
+            background: #adc6ff;
+            box-shadow: 0 0 8px #adc6ff;
+            transition: width 0.5s ease-in-out;
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb95f",
+                      "error-container": "#93000a",
+                      "surface-tint": "#adc6ff",
+                      "surface-variant": "#2d3449",
+                      "inverse-surface": "#dae2fd",
+                      "error": "#ffb4ab",
+                      "surface-container-high": "#222a3d",
+                      "primary-container": "#4d8eff",
+                      "outline-variant": "#424754",
+                      "outline": "#8c909f",
+                      "secondary-fixed-dim": "#4edea3",
+                      "on-error": "#690005",
+                      "background": "#0b1326",
+                      "tertiary-fixed": "#ffddb8",
+                      "surface-bright": "#31394d",
+                      "surface-container-low": "#131b2e",
+                      "primary-fixed-dim": "#adc6ff",
+                      "primary-fixed": "#d8e2ff",
+                      "on-tertiary-container": "#3e2400",
+                      "on-error-container": "#ffdad6",
+                      "tertiary": "#ffb95f",
+                      "surface": "#0b1326",
+                      "on-primary-fixed": "#001a42",
+                      "on-tertiary-fixed": "#2a1700",
+                      "on-secondary-fixed": "#002113",
+                      "on-tertiary-fixed-variant": "#653e00",
+                      "on-primary-container": "#00285d",
+                      "inverse-on-surface": "#283044",
+                      "on-surface-variant": "#c2c6d6",
+                      "secondary": "#4edea3",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-surface": "#dae2fd",
+                      "on-secondary-container": "#00311f",
+                      "on-background": "#dae2fd",
+                      "on-primary": "#002e6a",
+                      "secondary-fixed": "#6ffbbe",
+                      "surface-container-lowest": "#060e20",
+                      "tertiary-container": "#ca8100",
+                      "on-secondary": "#003824",
+                      "surface-container-highest": "#2d3449",
+                      "surface-container": "#171f33",
+                      "primary": "#adc6ff",
+                      "surface-dim": "#0b1326",
+                      "secondary-container": "#00a572",
+                      "on-tertiary": "#472a00",
+                      "inverse-primary": "#005ac2",
+                      "on-primary-fixed-variant": "#004395"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "8px",
+                      "bento-gap": "20px",
+                      "mobile-margin": "16px",
+                      "container-padding": "24px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Plus Jakarta Sans"],
+                      "body-sm": ["Plus Jakarta Sans"],
+                      "body-md": ["Plus Jakarta Sans"],
+                      "headline-md": ["Plus Jakarta Sans"],
+                      "body-lg": ["Plus Jakarta Sans"],
+                      "label-md": ["Plus Jakarta Sans"],
+                      "display-lg": ["Plus Jakarta Sans"],
+                      "headline-lg": ["Plus Jakarta Sans"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-background text-on-background min-h-screen overflow-hidden">
+<!-- TopNavBar (Fixed) -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-container-padding h-16 bg-background/80 backdrop-blur-xl border-b border-white/5 shadow-sm">
+<div class="flex items-center gap-8">
+<span class="font-headline-md text-headline-md font-bold text-primary">CargoFlux</span>
+<div class="hidden md:flex relative items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="bg-surface-container-lowest border-none rounded-lg pl-10 pr-4 py-2 text-sm w-80 focus:ring-2 focus:ring-primary/50 transition-all placeholder:text-on-surface-variant/50" placeholder="Global Simulation Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-white/5 p-2 rounded-full transition-colors active:scale-95 duration-200">notifications</button>
+<button class="material-symbols-outlined text-on-surface-variant hover:bg-white/5 p-2 rounded-full transition-colors active:scale-95 duration-200">settings</button>
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20">
+<img class="object-cover" data-alt="A professional male user profile avatar with a clean, modern aesthetic. The background is a soft gradient of deep blues and purples, matching the CargoFlux brand colors. He is wearing a minimalist dark shirt, and the lighting is cinematic, highlighting his face with a gentle glow that emphasizes precision and command." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFbJANWaWTcIIpc1k2Jnaep_tgVN1iRaYDyDKAjdxiPR-9j6Ov95H31EMOCIJ91YNJzKPknOgJN-hyfp-unN0na982sx4ONaEGxkK-96y1ryEgKIN6FSuba2aqlDZIgbqkbv9FpidIDB6QeMvBvCXtKoBEomjUEWHV9maZ0IYtkyMgKMUtepPllef6Nm9RSyZwpsW4yt-QxY3hUrBtSd_Oggw3rFRDDyJJwe9brn7jSB8S3Mv1XFsl2zaOi6HIAxmsM8LW64zduFQ"/>
+</div>
+</div>
+</header>
+<!-- SideNavBar (Fixed) -->
+<aside class="fixed left-0 top-0 h-full flex flex-col pt-20 bg-surface-container-low/50 backdrop-blur-md border-r border-white/10 w-64 z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<div>
+<h2 class="text-on-surface font-headline-md text-sm font-bold">CargoFlux</h2>
+<p class="text-on-surface-variant text-[10px] uppercase tracking-widest">Mission Control</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1 px-4">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">inventory_2</span>
+<span class="font-label-md text-label-md">Freight Pipeline</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">hub</span>
+<span class="font-label-md text-label-md">Connectors Hub</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-300 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">analytics</span>
+<span class="font-label-md text-label-md">Analytics Center</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary-container/20 text-primary border-r-4 border-primary transition-all duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">terminal</span>
+<span class="font-label-md text-label-md">System Simulator</span>
+</a>
+</nav>
+<div class="p-6">
+<button class="w-full py-3 px-4 bg-primary text-on-primary font-bold rounded-lg neon-glow-primary hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">play_arrow</span>
+                Initialize Sim
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 pt-20 px-container-padding pb-container-padding h-screen overflow-y-auto">
+<div class="max-w-7xl mx-auto">
+<header class="mb-8">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Simulation Dashboard</h1>
+<p class="text-on-surface-variant font-body-md mt-1">Real-time control over logistical pipeline automation events.</p>
+</header>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-bento-gap auto-rows-[minmax(180px,auto)]">
+<!-- 1. Trigger Simulation Actions Card -->
+<section class="col-span-12 lg:col-span-7 glass-panel p-6 rounded-xl flex flex-col gap-6">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">bolt</span>
+                            Trigger Simulation Actions
+                        </h3>
+<div class="flex gap-2">
+<button class="flex items-center gap-2 px-4 py-2 bg-surface-container-high rounded-lg text-tertiary-fixed-dim font-bold hover:bg-surface-bright transition-colors active:scale-95">
+<span class="material-symbols-outlined text-sm">fast_forward</span>
+                                Fast-Forward Timer
+                            </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-error-container/20 border border-error/20 rounded-lg text-error font-bold hover:bg-error-container/40 transition-colors active:scale-95">
+<span class="material-symbols-outlined text-sm">refresh</span>
+                                Reset Database
+                            </button>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Ingest Section -->
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-white/5 space-y-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">mail</span>
+                                INGEST CUSTOMER REQUEST EMAIL
+                            </h4>
+<select class="w-full bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none">
+<option>Standard LTL - LA to Chicago</option>
+<option>Hazmat LTL - Houston to NY</option>
+<option>Expedited LTL - Seattle to SF</option>
+</select>
+<button class="w-full py-2 bg-primary/10 border border-primary/30 text-primary rounded-lg font-bold hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">download</span>
+                                Ingest
+                            </button>
+</div>
+<!-- Carrier RFQ Section -->
+<div class="p-4 bg-surface-container-lowest rounded-lg border border-white/5 space-y-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">handshake</span>
+                                CARRIER RFQ REPLY
+                            </h4>
+<div class="grid grid-cols-2 gap-3">
+<select class="bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none">
+<option>Q-1001</option>
+<option>Q-1002</option>
+</select>
+<select class="bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none">
+<option>UPS Freight</option>
+<option>FedEx Freight</option>
+<option>DHL Express</option>
+</select>
+</div>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">$</span>
+<input class="w-full bg-surface-container border border-white/10 rounded-lg py-2 pl-7 pr-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none" placeholder="Bid Price" type="number"/>
+</div>
+<button class="w-full py-2 bg-secondary/10 border border-secondary/30 text-secondary-fixed-dim rounded-lg font-bold hover:bg-secondary/20 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">send</span>
+                                Submit Bid
+                            </button>
+</div>
+</div>
+</section>
+<!-- 2. Active Bidding Timers & State Card -->
+<section class="col-span-12 lg:col-span-5 glass-panel p-6 rounded-xl flex flex-col">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-tertiary">timer</span>
+                        Active Bidding Timers
+                    </h3>
+<div class="space-y-6 flex-1">
+<!-- Active Timer Item 1 -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-body-md font-semibold">Round 1: Out to Carriers</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Quote Q-1001 • LA to Chicago</p>
+</div>
+<span class="font-label-md text-primary bg-primary/10 px-2 py-1 rounded">55s remaining</span>
+</div>
+<div class="cargo-progress">
+<div class="cargo-progress-fill w-[70%]"></div>
+</div>
+</div>
+<!-- Active Timer Item 2 -->
+<div class="space-y-3">
+<div class="flex justify-between items-end">
+<div>
+<p class="font-body-md font-semibold">Round 2: Re-Bid Round</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Quote Q-9842 • Houston to NY</p>
+</div>
+<span class="font-label-md text-tertiary bg-tertiary/10 px-2 py-1 rounded">15s remaining</span>
+</div>
+<div class="cargo-progress bg-white/5">
+<div class="cargo-progress-fill w-[15%] bg-tertiary shadow-[0_0_8px_#ffb95f]"></div>
+</div>
+</div>
+<!-- State Indicator -->
+<div class="mt-auto pt-6 border-t border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-secondary"></span>
+</span>
+<span class="font-label-md text-on-surface-variant">System Status: Active</span>
+</div>
+<div class="text-right">
+<span class="font-label-md text-on-surface-variant block">Active RFQs</span>
+<span class="font-headline-md text-headline-md text-on-surface">12</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. System Logs & Events Card -->
+<section class="col-span-12 glass-panel p-6 rounded-xl overflow-hidden flex flex-col max-h-[350px]">
+<div class="flex items-center justify-between mb-4">
+<h3 class="font-headline-md text-headline-md flex items-center gap-2">
+<span class="material-symbols-outlined text-on-surface-variant">terminal</span>
+                             System Logs &amp; Events
+                        </h3>
+<div class="flex gap-4 text-[11px] font-mono text-on-surface-variant">
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary"></span> INFO</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary"></span> SUCCESS</span>
+<span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-tertiary"></span> WARN</span>
+</div>
+</div>
+<div class="flex-1 terminal-scroll overflow-y-auto bg-black/30 rounded-lg p-4 font-mono text-sm space-y-2 border border-white/5">
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:24:12]</span>
+<span class="text-primary">INFO</span>
+<span class="text-on-surface">Ingested customer email: "LTL Shipment Request - LA to Chicago"</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:24:13]</span>
+<span class="text-secondary">SUCCESS</span>
+<span class="text-on-surface">NLP extraction complete: 3,200 lbs, 4 Pallets, Class 70.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:24:15]</span>
+<span class="text-primary">INFO</span>
+<span class="text-on-surface">RFQ broadcast sent to 8 primary carrier endpoints.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:25:30]</span>
+<span class="text-secondary">SUCCESS</span>
+<span class="text-on-surface">Bid received: FedEx Freight ($1,240.00) for Quote Q-1001.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:26:15]</span>
+<span class="text-tertiary">WARN</span>
+<span class="text-on-surface">Re-bid triggered: Counter-offer threshold reached for Q-9842.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:27:01]</span>
+<span class="text-primary">INFO</span>
+<span class="text-on-surface">System simulator state saved to local repository.</span>
+</div>
+<div class="flex gap-4">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:27:45]</span>
+<span class="text-primary">INFO</span>
+<span class="text-on-surface">Carrier "UPS Freight" pinged for status update on Q-1001.</span>
+</div>
+<div class="flex gap-4" id="dynamic-cursor">
+<span class="text-on-surface-variant opacity-50 shrink-0">[10:28:10]</span>
+<span class="text-primary">INFO</span>
+<span class="animate-pulse w-2 h-4 bg-primary/50"></span>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- Micro-interaction for the log terminal -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const terminal = document.querySelector('.terminal-scroll');
+            const scrollToEnd = () => {
+                terminal.scrollTop = terminal.scrollHeight;
+            };
+            
+            // Simulation of new logs appearing
+            setInterval(() => {
+                const logs = [
+                    "Checking carrier API connectivity...",
+                    "Quote Q-1001 timer updated: 42s remaining.",
+                    "Latency check: US-West region within limits.",
+                    "Bid received: DHL Express ($1,310.00) for Q-1001."
+                ];
+                const log = logs[Math.floor(Math.random() * logs.length)];
+                const time = new Date().toLocaleTimeString([], { hour12: false });
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'flex gap-4 opacity-0 transition-opacity duration-500';
+                logEntry.innerHTML = `
+                    <span class="text-on-surface-variant opacity-50 shrink-0">[${time}]</span>
+                    <span class="text-primary">INFO</span>
+                    <span class="text-on-surface">${log}</span>
+                `;
+                
+                const cursor = document.getElementById('dynamic-cursor');
+                terminal.insertBefore(logEntry, cursor);
+                
+                setTimeout(() => {
+                    logEntry.classList.remove('opacity-0');
+                    scrollToEnd();
+                }, 10);
+
+                // Keep only last 20 logs
+                if (terminal.children.length > 25) {
+                    terminal.removeChild(terminal.firstElementChild);
+                }
+            }, 5000);
+        });
+    </script>
+</body></html>

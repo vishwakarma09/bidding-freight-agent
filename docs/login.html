@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CargoFlux | Portal Login</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#2a1700",
+                        "error": "#ffb4ab",
+                        "on-primary-container": "#00285d",
+                        "secondary-container": "#00a572",
+                        "on-secondary-fixed": "#002113",
+                        "surface-bright": "#31394d",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary": "#002e6a",
+                        "inverse-primary": "#005ac2",
+                        "outline": "#8c909f",
+                        "on-surface": "#dae2fd",
+                        "inverse-surface": "#dae2fd",
+                        "inverse-on-surface": "#283044",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary": "#ffb95f",
+                        "surface": "#0b1326",
+                        "primary-container": "#4d8eff",
+                        "surface-container-low": "#131b2e",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#005236",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#adc6ff",
+                        "on-tertiary": "#472a00",
+                        "secondary-fixed": "#6ffbbe",
+                        "surface-container": "#171f33",
+                        "on-secondary-container": "#00311f",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary": "#4edea3",
+                        "background": "#0b1326",
+                        "surface-container-high": "#222a3d",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-highest": "#2d3449",
+                        "surface-dim": "#0b1326",
+                        "outline-variant": "#424754",
+                        "on-secondary": "#003824",
+                        "on-error": "#690005",
+                        "tertiary-container": "#ca8100",
+                        "on-tertiary-container": "#3e2400",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-background": "#dae2fd",
+                        "surface-variant": "#2d3449",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container-lowest": "#060e20",
+                        "on-primary-fixed": "#001a42",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "24px",
+                        "gutter": "16px",
+                        "unit": "8px",
+                        "mobile-margin": "16px",
+                        "bento-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            background-color: #0b1326;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .tech-grid {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .mesh-gradient {
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(255, 185, 95, 0.1) 0%, transparent 40%);
+        }
+
+        .role-tab-active {
+            color: #adc6ff;
+            background: rgba(173, 198, 255, 0.1);
+            border-bottom: 2px solid #adc6ff;
+        }
+
+        .input-focus:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .floating-orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body class="dark bg-surface text-on-surface h-screen w-screen flex items-center justify-center">
+<!-- Atmospheric Elements -->
+<div class="fixed inset-0 tech-grid pointer-events-none"></div>
+<div class="fixed inset-0 mesh-gradient pointer-events-none"></div>
+<div class="floating-orb bg-primary left-[-100px] top-[-100px] animate-pulse"></div>
+<div class="floating-orb bg-tertiary right-[-100px] bottom-[-100px] animate-pulse" style="animation-delay: 2s;"></div>
+<main class="relative z-10 w-full max-w-md px-mobile-margin">
+<!-- Login Card -->
+<div class="glass-card rounded-xl overflow-hidden p-8 flex flex-col space-y-6">
+<!-- Header Section -->
+<header class="flex flex-col items-center text-center space-y-3">
+<div class="w-16 h-16 rounded-lg bg-surface-container-high flex items-center justify-center p-2">
+<img alt="CargoFlux Logo" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary tracking-tight">CargoFlux Portal</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant/80">Sign in to access your freight bidding dashboard</p>
+</div>
+</header>
+<!-- Role Selector -->
+<nav class="flex w-full bg-black/20 rounded-lg p-1">
+<button class="role-tab flex-1 py-2 font-label-md text-label-md text-on-surface-variant/60 rounded-md transition-all role-tab-active" data-role="Shipper" onclick="selectRole(this)">Shipper</button>
+<button class="role-tab flex-1 py-2 font-label-md text-label-md text-on-surface-variant/60 rounded-md transition-all" data-role="Broker" onclick="selectRole(this)">Broker</button>
+<button class="role-tab flex-1 py-2 font-label-md text-label-md text-on-surface-variant/60 rounded-md transition-all" data-role="Carrier" onclick="selectRole(this)">Carrier</button>
+</nav>
+<!-- Login Form -->
+<form action="#" class="flex flex-col space-y-4" onsubmit="event.preventDefault();">
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant/70 uppercase tracking-widest px-1" for="email">Institutional Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xl">alternate_email</span>
+<input class="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg py-3 pl-11 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none input-focus transition-all" id="email" placeholder="name@cargoflux.ai" type="email"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant/70 uppercase tracking-widest px-1" for="password">Security Key</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-xl">lock</span>
+<input class="w-full bg-surface-container-lowest/40 border border-white/10 rounded-lg py-3 pl-11 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/30 focus:outline-none input-focus transition-all" id="password" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<!-- Utilities -->
+<div class="flex items-center justify-between py-1">
+<label class="flex items-center space-x-2 cursor-pointer group">
+<div class="relative w-5 h-5 border border-white/20 rounded bg-black/20 group-hover:border-primary/50 transition-colors flex items-center justify-center">
+<input class="peer absolute opacity-0 w-full h-full cursor-pointer" type="checkbox"/>
+<span class="material-symbols-outlined text-[16px] text-primary opacity-0 peer-checked:opacity-100 transition-opacity">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant/70 group-hover:text-on-surface transition-colors">Remember me</span>
+</label>
+<a class="font-body-sm text-body-sm text-primary hover:text-primary-fixed-dim transition-colors decoration-primary/20 hover:underline underline-offset-4" href="#">Forgot Password?</a>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-inverse-primary hover:bg-primary-container text-on-primary-container font-headline-md text-headline-md py-4 rounded-lg neon-glow transition-all active:scale-[0.98] mt-2 group relative overflow-hidden" type="submit">
+<span class="relative z-10">Sign In to Dashboard</span>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+</form>
+<!-- Footer -->
+<footer class="text-center pt-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant/60">
+                    Don't have an account? 
+                    <a class="text-secondary hover:text-secondary-fixed transition-colors font-semibold" href="#">Register Hub</a>
+</p>
+</footer>
+</div>
+<!-- Security Badge -->
+<div class="mt-8 flex items-center justify-center space-x-6 opacity-40 hover:opacity-100 transition-opacity">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-xl text-secondary">verified_user</span>
+<span class="font-label-md text-label-md uppercase">SOC2 Type II</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-xl text-secondary">lock_reset</span>
+<span class="font-label-md text-label-md uppercase">AES-256 Auth</span>
+</div>
+</div>
+</main>
+<script>
+        function selectRole(element) {
+            // Remove active classes
+            document.querySelectorAll('.role-tab').forEach(tab => {
+                tab.classList.remove('role-tab-active');
+            });
+            // Add to current
+            element.classList.add('role-tab-active');
+            
+            // Subtle feedback
+            console.log(`Role switched to: ${element.getAttribute('data-role')}`);
+        }
+
+        // Mouse move parallax effect for orbs
+        document.addEventListener('mousemove', (e) => {
+            const orbs = document.querySelectorAll('.floating-orb');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            orbs.forEach((orb, index) => {
+                const factor = (index + 1) * 20;
+                orb.style.transform = `translate(${x * factor}px, ${y * factor}px)`;
+            });
+        });
+    </script>
+</body></html>
+

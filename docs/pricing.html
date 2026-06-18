@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing | CargoFlux - Intelligent Logistics Automation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#472a00",
+                        "inverse-primary": "#005ac2",
+                        "outline-variant": "#424754",
+                        "inverse-on-surface": "#283044",
+                        "primary-container": "#4d8eff",
+                        "on-surface": "#dae2fd",
+                        "on-background": "#dae2fd",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#adc6ff",
+                        "on-primary-container": "#00285d",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary-container": "#00a572",
+                        "on-primary": "#002e6a",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-tertiary-container": "#3e2400",
+                        "tertiary-fixed": "#ffddb8",
+                        "surface-container": "#171f33",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-fixed": "#2a1700",
+                        "on-secondary-container": "#00311f",
+                        "on-secondary": "#003824",
+                        "background": "#0b1326",
+                        "surface": "#0b1326",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "inverse-surface": "#dae2fd",
+                        "outline": "#8c909f",
+                        "surface-dim": "#0b1326",
+                        "surface-container-high": "#222a3d",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-fixed": "#002113",
+                        "on-primary-fixed": "#001a42",
+                        "secondary": "#4edea3",
+                        "tertiary-container": "#ca8100",
+                        "surface-container-lowest": "#060e20",
+                        "surface-container-low": "#131b2e",
+                        "tertiary-fixed-dim": "#ffb95f",
+                        "surface-container-highest": "#2d3449",
+                        "surface-bright": "#31394d",
+                        "error-container": "#93000a",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-error-container": "#ffdad6",
+                        "surface-tint": "#adc6ff",
+                        "tertiary": "#ffb95f",
+                        "surface-variant": "#2d3449"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "bento-gap": "20px",
+                        "gutter": "16px",
+                        "mobile-margin": "16px",
+                        "container-padding": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Plus Jakarta Sans"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "headline-lg-mobile": ["Plus Jakarta Sans"],
+                        "body-sm": ["Plus Jakarta Sans"],
+                        "display-lg": ["Plus Jakarta Sans"],
+                        "headline-md": ["Plus Jakarta Sans"],
+                        "body-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #060e20;
+            color: #dae2fd;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .neon-glow-primary {
+            box-shadow: 0 0 15px rgba(173, 198, 255, 0.2);
+            border: 1px solid rgba(173, 198, 255, 0.4);
+        }
+
+        .neon-glow-btn {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .bento-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .cargo-gradient {
+            background: radial-gradient(circle at top right, rgba(173, 198, 255, 0.05), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(78, 222, 163, 0.03), transparent 40%);
+        }
+
+        .grid-overlay {
+            background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                             linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .active-nav-border {
+            position: relative;
+        }
+        .active-nav-border::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #adc6ff;
+        }
+    </style>
+</head>
+<body class="bg-background">
+<!-- Atmospheric Layer -->
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute inset-0 grid-overlay"></div>
+
+</div>
+<!-- Navigation Shell -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-surface/50 backdrop-blur-md border-b border-outline-variant/30">
+<div class="flex justify-between items-center w-full px-container-padding py-4 max-w-7xl mx-auto h-20">
+<div class="flex items-center gap-3">
+<img alt="CargoFlux Logo" class="h-10 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+<span class="text-headline-md font-headline-md font-bold tracking-tight text-primary">CargoFlux</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-all duration-300" href="#">Platform</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-all duration-300" href="#">Solutions</a>
+<a class="text-on-surface-variant font-body-md hover:text-primary transition-all duration-300" href="#">Network</a>
+<a class="text-primary font-bold active-nav-border pb-1" href="#">Company</a>
+</div>
+<button class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-lg font-label-md text-label-md hover:brightness-110 active:scale-95 transition-all duration-150">
+                Launch Terminal
+            </button>
+</div>
+</nav>
+<main class="relative z-10 pt-32 pb-24 px-container-padding max-w-7xl mx-auto">
+<!-- Header Section -->
+<header class="text-center mb-20 space-y-4">
+<span class="text-primary font-label-md text-label-md tracking-widest uppercase">Pricing &amp; Plans</span>
+<h1 class="text-display-lg font-headline-lg text-on-surface tracking-tight max-w-3xl mx-auto">
+                Predictable Pricing for <br/><span class="text-primary-fixed-dim">Modern Logistics</span>
+</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Scale your freight brokerage operations with transparent volume-based plans designed for precision and speed.
+            </p>
+</header>
+<!-- Pricing Cards Bento Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-bento-gap items-stretch">
+<!-- Starter Plan -->
+<div class="glass-panel rounded-xl p-8 flex flex-col hover:border-outline transition-colors duration-300">
+<div class="mb-8">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Starter</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-headline-lg text-on-surface">$0</span>
+<span class="text-on-surface-variant font-body-sm">/month</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-4">Perfect for individual brokers testing AI capabilities.</p>
+</div>
+<ul class="space-y-4 flex-grow mb-10">
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        10 AI email parses
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Basic carriers broadcast
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Email-only channel
+                    </li>
+</ul>
+<button class="w-full py-4 border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-white/5 transition-all">
+                    Start Free Trial
+                </button>
+</div>
+<!-- Growth Plan (Recommended) -->
+<div class="glass-panel neon-glow-primary rounded-xl p-8 flex flex-col relative scale-105 z-20 border-primary/40 bg-surface-container/60 overflow-hidden">
+<div class="absolute top-0 right-0 px-4 py-1 bg-primary text-on-primary-container font-label-md text-label-md rounded-bl-lg">
+                    RECOMMENDED
+                </div>
+<div class="mb-8">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Growth</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-headline-lg text-on-surface">$199</span>
+<span class="text-on-surface-variant font-body-sm">/month</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-4">For expanding brokerages automating high volumes.</p>
+</div>
+<ul class="space-y-4 flex-grow mb-10">
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        250 AI email parses
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        SMS &amp; Email channels
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Automated re-bid rounds
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Advanced lane analytics
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        pgvector RAG benchmarking
+                    </li>
+</ul>
+<button class="w-full py-4 bg-primary text-on-primary font-label-md text-label-md rounded-lg neon-glow-btn hover:brightness-110 active:scale-95 transition-all">
+                    Get Started with Growth
+                </button>
+</div>
+<!-- Enterprise Plan -->
+<div class="glass-panel rounded-xl p-8 flex flex-col hover:border-outline transition-colors duration-300">
+<div class="mb-8">
+<h3 class="text-headline-md font-headline-md text-on-surface mb-2">Enterprise</h3>
+<div class="flex items-baseline gap-1">
+<span class="text-display-lg font-headline-lg text-on-surface">Custom</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mt-4">Enterprise-grade infrastructure for global logistics.</p>
+</div>
+<ul class="space-y-4 flex-grow mb-10">
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Unlimited parses
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        WhatsApp/SMS/Email
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Custom markup engine
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        API &amp; Webhook integration
+                    </li>
+<li class="flex items-start gap-3 text-body-md font-body-md text-on-surface-variant">
+<span class="material-symbols-outlined text-secondary text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                        Dedicated SLA support
+                    </li>
+</ul>
+<button class="w-full py-4 bg-white/10 text-on-surface font-label-md text-label-md rounded-lg hover:bg-white/20 backdrop-blur-sm transition-all">
+                    Contact Sales
+                </button>
+</div>
+</div>
+<!-- FAQ Section -->
+<section class="mt-32 max-w-4xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Frequently Asked Questions</h2>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">Everything you need to know about CargoFlux.</p>
+</div>
+<div class="space-y-4">
+<div class="glass-panel rounded-xl overflow-hidden group">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+<span class="text-headline-md font-headline-md text-on-surface">How does AI parsing work?</span>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="max-h-0 overflow-hidden transition-all duration-300 px-6">
+<p class="pb-6 text-body-md font-body-md text-on-surface-variant">
+                            Our proprietary engine leverages Cerebras AI to extract structured freight data from unstructured carrier emails in milliseconds. It recognizes origin/destination pairs, weight, equipment type, and rate offers with 99.9% accuracy, eliminating manual entry.
+                        </p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+<span class="text-headline-md font-headline-md text-on-surface">Can I add my own carrier contacts?</span>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="max-h-0 overflow-hidden transition-all duration-300 px-6">
+<p class="pb-6 text-body-md font-body-md text-on-surface-variant">
+                            Yes. CargoFlux is designed to augment your existing carrier network. You can bulk import CSVs, connect via API, or sync with your TMS. The platform acts as a smart relay for your trusted partners.
+                        </p>
+</div>
+</div>
+<div class="glass-panel rounded-xl overflow-hidden group">
+<button class="w-full flex items-center justify-between p-6 text-left" onclick="toggleFaq(this)">
+<span class="text-headline-md font-headline-md text-on-surface">What channels are supported?</span>
+<span class="material-symbols-outlined transition-transform duration-300">expand_more</span>
+</button>
+<div class="max-h-0 overflow-hidden transition-all duration-300 px-6">
+<p class="pb-6 text-body-md font-body-md text-on-surface-variant">
+                            CargoFlux natively supports Email (SMTP/O365/Gmail), SMS (Twilio integration), and WhatsApp Business API. Our Growth and Enterprise plans allow you to broadcast across all three simultaneously to maximize reach.
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Dynamic Visual Asset -->
+<section class="mt-32 relative h-96 rounded-3xl overflow-hidden glass-panel flex flex-col items-center justify-center text-center p-12">
+
+<div class="relative z-10 space-y-6">
+<h2 class="text-headline-lg font-headline-lg text-on-surface">Ready to automate your lane?</h2>
+<p class="text-body-lg font-body-lg text-on-surface-variant max-w-xl">Join 500+ brokerages using CargoFlux to reduce procurement time by 80%.</p>
+<div class="flex gap-4 justify-center">
+<button class="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md text-label-md neon-glow-btn">Start 14-Day Trial</button>
+<button class="glass-panel px-8 py-3 rounded-lg font-label-md text-label-md border-white/10 text-on-surface">View Demo</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="bg-surface-container-lowest border-t border-outline-variant/20 py-12">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-bento-gap max-w-7xl mx-auto px-container-padding">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-2 mb-4">
+<img alt="Logo" class="h-8 w-auto" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+<span class="text-headline-sm font-headline-sm font-bold text-primary">CargoFlux</span>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Precise Logistics Automation for the future of global freight.</p>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase mb-4">Product</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">AI Parsing</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Carrier Network</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">RFQ Engine</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase mb-4">Resources</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Documentation</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">API Reference</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Lane Benchmarks</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-label-md font-label-md text-on-surface uppercase mb-4">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Terms of Service</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors duration-200 text-body-sm" href="#">Compliance</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-container-padding mt-12 pt-8 border-t border-outline-variant/10 text-center">
+<p class="text-body-sm font-body-sm text-on-surface-variant opacity-80">© 2024 CargoFlux. Precise Logistics Automation.</p>
+</div>
+</footer>
+<script>
+        function toggleFaq(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('.material-symbols-outlined');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
+</body></html>
+

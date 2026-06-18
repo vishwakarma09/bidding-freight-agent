@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register | CargoFlux Systems</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#ffb95f",
+                    "on-secondary": "#003824",
+                    "on-secondary-container": "#00311f",
+                    "tertiary-container": "#ca8100",
+                    "surface-dim": "#0b1326",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "surface-container-lowest": "#060e20",
+                    "on-primary-fixed": "#001a42",
+                    "surface-bright": "#31394d",
+                    "on-secondary-fixed-variant": "#005236",
+                    "inverse-primary": "#005ac2",
+                    "tertiary-fixed": "#ffddb8",
+                    "surface-container-high": "#222a3d",
+                    "secondary-fixed": "#6ffbbe",
+                    "on-surface": "#dae2fd",
+                    "inverse-surface": "#dae2fd",
+                    "on-tertiary": "#472a00",
+                    "on-error": "#690005",
+                    "background": "#0b1326",
+                    "on-secondary-fixed": "#002113",
+                    "inverse-on-surface": "#283044",
+                    "tertiary-fixed-dim": "#ffb95f",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "surface-variant": "#2d3449",
+                    "error-container": "#93000a",
+                    "outline-variant": "#424754",
+                    "surface-container-highest": "#2d3449",
+                    "surface-container": "#171f33",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-background": "#dae2fd",
+                    "surface-tint": "#adc6ff",
+                    "secondary": "#4edea3",
+                    "primary-fixed": "#d8e2ff",
+                    "primary": "#adc6ff",
+                    "on-tertiary-fixed": "#2a1700",
+                    "surface": "#0b1326",
+                    "outline": "#8c909f",
+                    "surface-container-low": "#131b2e",
+                    "secondary-container": "#00a572",
+                    "on-surface-variant": "#c2c6d6",
+                    "on-primary-container": "#00285d",
+                    "primary-container": "#4d8eff",
+                    "on-primary-fixed-variant": "#004395",
+                    "on-tertiary-container": "#3e2400",
+                    "on-primary": "#002e6a",
+                    "secondary-fixed-dim": "#4edea3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "bento-gap": "20px",
+                    "gutter": "16px",
+                    "unit": "8px",
+                    "container-padding": "24px",
+                    "mobile-margin": "16px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"],
+                    "display-lg": ["Plus Jakarta Sans"],
+                    "headline-md": ["Plus Jakarta Sans"],
+                    "headline-lg": ["Plus Jakarta Sans"],
+                    "body-sm": ["Plus Jakarta Sans"],
+                    "body-md": ["Plus Jakarta Sans"],
+                    "body-lg": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .mesh-bg {
+            background-color: #0b1326;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(173, 198, 255, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(78, 222, 163, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(255, 185, 95, 0.05) 0px, transparent 50%);
+        }
+
+        .tech-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, 50px) scale(1.2); }
+        }
+
+        input:focus {
+            box-shadow: 0 0 0 2px rgba(173, 198, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen font-body-md text-body-md overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- Atmospheric Background Layers -->
+<div class="fixed inset-0 mesh-bg tech-grid -z-10"></div>
+<div class="orb w-[500px] h-[500px] bg-primary/10 top-[-100px] left-[-100px]"></div>
+<div class="orb w-[400px] h-[400px] bg-secondary/10 bottom-[-50px] right-[-50px]" style="animation-delay: -5s;"></div>
+<div class="orb w-[300px] h-[300px] bg-tertiary/10 top-[20%] right-[10%]" style="animation-delay: -10s;"></div>
+<main class="min-h-screen flex items-center justify-center p- mobile-margin md:p-container-padding">
+<!-- Registration Card -->
+<div class="glass-panel w-full max-w-[560px] rounded-xl p-8 md:p-12 transition-all duration-500 hover:border-white/20">
+<!-- Brand & Header -->
+<div class="text-center mb-10">
+<div class="flex justify-center mb-6">
+<img alt="CargoFlux Logo" class="h-16 w-auto drop-shadow-lg" src="https://lh3.googleusercontent.com/aida/AP1WRLu7BPwcw7x3J_R_P0DSSP6JnMv-FGrgibdz9CGtXMSKLo9monP3nI-8Dqt9GI3nTA7UjpBXhOKGZuh1__cZgRTzDyCNZxz8dueybqLw3r0WfaFD7q6OP1PsYK_XaYtD2ip_d-ykcVyiJtEWZjt-qnL_q7H2BUIVfA7WESXaS_KdxkBjVBsUnJEtpFY5Pzg97cKQcebzMfALciCYFFVCwhegLDMejXSYqyuwg-bCWLy7eYe3UrHQW6p3nw"/>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2 tracking-tight">Create CargoFlux Account</h1>
+<p class="text-on-surface-variant font-body-md">Join the automated freight bidding network</p>
+</div>
+<!-- Role Selection -->
+<div class="mb-8">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase mb-3">Organization Role</label>
+<div class="grid grid-cols-3 gap-2 bg-surface-container-lowest/50 p-1.5 rounded-lg border border-white/5">
+<button class="role-btn font-label-md text-label-md py-3 rounded-lg bg-primary text-on-primary font-bold transition-all duration-200" onclick="selectRole(this)" type="button">Shipper</button>
+<button class="role-btn font-label-md text-label-md py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" onclick="selectRole(this)" type="button">Broker</button>
+<button class="role-btn font-label-md text-label-md py-3 rounded-lg text-on-surface-variant hover:bg-white/5 transition-all duration-200" onclick="selectRole(this)" type="button">Carrier</button>
+</div>
+</div>
+<form class="space-y-6" onsubmit="event.preventDefault();">
+<!-- Fields Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="full_name">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">person</span>
+<input class="w-full bg-surface-container-lowest/40 border-outline-variant/30 rounded-lg py-3 pl-10 pr-4 text-on-surface placeholder:text-outline/50 focus:border-primary focus:ring-0 transition-colors" id="full_name" placeholder="John Logistics" type="text"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="company_name">Company Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">business</span>
+<input class="w-full bg-surface-container-lowest/40 border-outline-variant/30 rounded-lg py-3 pl-10 pr-4 text-on-surface placeholder:text-outline/50 focus:border-primary focus:ring-0 transition-colors" id="company_name" placeholder="Global Freight Inc" type="text"/>
+</div>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="email">Corporate Email</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">alternate_email</span>
+<input class="w-full bg-surface-container-lowest/40 border-outline-variant/30 rounded-lg py-3 pl-10 pr-4 text-on-surface placeholder:text-outline/50 focus:border-primary focus:ring-0 transition-colors" id="email" placeholder="admin@cargoflux.com" type="email"/>
+</div>
+</div>
+<!-- Security Keys -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="security_key">Security Key</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">key</span>
+<input class="w-full bg-surface-container-lowest/40 border-outline-variant/30 rounded-lg py-3 pl-10 pr-4 text-on-surface placeholder:text-outline/50 focus:border-primary focus:ring-0 transition-colors" id="security_key" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block font-label-md text-label-md text-on-surface-variant uppercase" for="confirm_key">Confirm Key</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">verified_user</span>
+<input class="w-full bg-surface-container-lowest/40 border-outline-variant/30 rounded-lg py-3 pl-10 pr-4 text-on-surface placeholder:text-outline/50 focus:border-primary focus:ring-0 transition-colors" id="confirm_key" placeholder="••••••••" type="password"/>
+</div>
+</div>
+</div>
+<!-- Terms -->
+<div class="flex items-start gap-3 pt-2">
+<div class="flex items-center h-5">
+<input class="w-5 h-5 rounded border-outline-variant/50 bg-surface-container-lowest text-primary focus:ring-primary focus:ring-offset-background transition-all" id="terms" type="checkbox"/>
+</div>
+<label class="text-body-sm font-body-sm text-on-surface-variant" for="terms">
+                        I agree to the <a class="text-secondary hover:underline transition-all" href="#">Terms of Service</a> and acknowledge the <a class="text-secondary hover:underline transition-all" href="#">Privacy Policy</a> regarding my logistics data.
+                    </label>
+</div>
+<!-- Action -->
+<button class="w-full bg-primary-container text-on-primary-container py-4 px-6 rounded-lg font-headline-md text-headline-md font-bold tracking-tight neon-glow hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2" type="submit">
+                    Create Account
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<!-- Footer Link -->
+<div class="mt-10 pt-8 border-t border-white/5 text-center">
+<p class="font-body-md text-on-surface-variant">
+                    Already have an account? 
+                    <a class="text-tertiary font-bold ml-1 hover:text-tertiary-fixed-dim transition-colors inline-flex items-center gap-1" href="#">
+                        Sign In
+                        <span class="material-symbols-outlined text-[18px]">login</span>
+</a>
+</p>
+</div>
+</div>
+</main>
+<!-- Success Feedback Overlay (Hidden by default) -->
+<div class="fixed inset-0 bg-surface-dim/80 backdrop-blur-xl z-[200] hidden items-center justify-center pointer-events-none opacity-0 transition-opacity duration-500" id="success-state">
+<div class="text-center p-12 glass-panel rounded-2xl max-w-md">
+<div class="w-20 h-20 bg-secondary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+<span class="material-symbols-outlined text-secondary text-[48px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-secondary mb-4">Verification Sent</h2>
+<p class="text-on-surface-variant font-body-md mb-8">Please check your corporate inbox to verify your account and unlock the bidding dashboard.</p>
+<button class="bg-surface-variant text-on-surface py-3 px-8 rounded-full font-label-md text-label-md uppercase tracking-widest hover:bg-surface-bright transition-colors" onclick="hideSuccess()">Dismiss</button>
+</div>
+</div>
+<script>
+        function selectRole(element) {
+            const btns = document.querySelectorAll('.role-btn');
+            btns.forEach(btn => {
+                btn.classList.remove('bg-primary', 'text-on-primary', 'font-bold');
+                btn.classList.add('text-on-surface-variant', 'hover:bg-white/5');
+            });
+            element.classList.add('bg-primary', 'text-on-primary', 'font-bold');
+            element.classList.remove('text-on-surface-variant', 'hover:bg-white/5');
+        }
+
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function() {
+            const success = document.getElementById('success-state');
+            success.classList.remove('hidden');
+            success.classList.add('flex');
+            setTimeout(() => {
+                success.classList.remove('opacity-0');
+                success.classList.add('opacity-100');
+            }, 50);
+        });
+
+        function hideSuccess() {
+            const success = document.getElementById('success-state');
+            success.classList.add('opacity-0');
+            setTimeout(() => {
+                success.classList.add('hidden');
+                success.classList.remove('flex');
+            }, 500);
+        }
+
+        // Micro-interaction for inputs
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.querySelector('.material-symbols-outlined').style.color = '#adc6ff'; // primary
+                input.parentElement.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.querySelector('.material-symbols-outlined').style.color = '#8c909f'; // outline
+                input.parentElement.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+            });
+        });
+    </script>
+</body></html>
+

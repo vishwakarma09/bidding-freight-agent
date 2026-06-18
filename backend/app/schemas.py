@@ -127,3 +127,28 @@ class SimulateEmailRequest(BaseModel):
     recipient: str
     subject: str
     body: str
+
+
+class ConnectorBase(BaseModel):
+    name: str
+    company_name: Optional[str] = None
+    contact_email: str
+    contact_phone: Optional[str] = None
+    contact_name: Optional[str] = None
+    contact_role: Optional[str] = None
+    channel: str = "email"
+    filtering_keywords: Optional[str] = None
+    status: str = "CONNECTED"
+
+
+class ConnectorCreate(ConnectorBase):
+    pass
+
+
+class ConnectorResponse(ConnectorBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
