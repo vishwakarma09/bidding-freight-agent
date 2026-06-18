@@ -105,7 +105,7 @@ const Dashboard = () => {
             </div>
             <h3 className="text-on-surface-variant font-label-md text-xs mb-1">Outstanding Receivables</h3>
             <p className="font-headline-md text-2xl font-bold text-on-surface">
-              ${analytics ? analytics.receivables.toLocaleString() : '45,200'}
+              ${analytics ? (analytics.receivables ?? 0).toLocaleString() : '45,200'}
             </p>
             <div className="absolute -right-4 -bottom-4 opacity-5 text-on-surface">
               <span className="material-symbols-outlined text-8xl">account_balance_wallet</span>
@@ -120,7 +120,7 @@ const Dashboard = () => {
             </div>
             <h3 className="text-on-surface-variant font-label-md text-xs mb-1">Active Payables</h3>
             <p className="font-headline-md text-2xl font-bold text-on-surface">
-              ${analytics ? analytics.payables.toLocaleString() : '38,500'}
+              ${analytics ? (analytics.payables ?? 0).toLocaleString() : '38,500'}
             </p>
           </div>
 
@@ -129,15 +129,15 @@ const Dashboard = () => {
             <div className="flex justify-between items-start mb-4">
               <span className="material-symbols-outlined text-secondary bg-secondary/10 p-2 rounded-lg">trending_up</span>
               <span className="text-[10px] text-secondary font-bold tracking-wider uppercase">
-                {analytics ? `+${analytics.markup}%` : '+15%'}
+                {analytics ? `+${analytics.markup ?? analytics.average_margin_percent ?? 15}%` : '+15%'}
               </span>
             </div>
             <h3 className="text-on-surface-variant font-label-md text-xs mb-1">Gross Margin Earned</h3>
             <p className="font-headline-md text-2xl font-bold text-on-surface">
-              ${analytics ? analytics.margin.toLocaleString() : '6,700'}
+              ${analytics ? (analytics.margin ?? analytics.gross_margin_value ?? 0).toLocaleString() : '6,700'}
             </p>
             <p className="text-secondary text-[10px] mt-1 font-bold uppercase tracking-wider">
-              {analytics ? `${analytics.markup}% Avg Markup` : '15% Avg Markup'}
+              {analytics ? `${analytics.markup ?? analytics.average_margin_percent ?? 15}% Avg Markup` : '15% Avg Markup'}
             </p>
           </div>
 
@@ -149,7 +149,7 @@ const Dashboard = () => {
             </div>
             <h3 className="text-on-surface-variant font-label-md text-xs mb-1">Proposal Conversion %</h3>
             <p className="font-headline-md text-2xl font-bold text-on-surface">
-              {analytics ? `${analytics.conversion_rate}%` : '78%'}
+              {analytics ? `${analytics.conversion_rate ?? analytics.quote_to_approval_conversion_pct ?? 78}%` : '78%'}
             </p>
           </div>
         </div>
@@ -197,7 +197,7 @@ const Dashboard = () => {
                           </p>
                           <div className="flex justify-between items-center pt-3 border-t border-white/5">
                             <span className="text-[11px] text-on-surface-variant">
-                              {quote.weight_lbs.toLocaleString()} lbs | Cl {quote.freight_class || '70'}
+                              {(quote.weight_lbs || 0).toLocaleString()} lbs | Cl {quote.freight_class || '70'}
                             </span>
                             <span className="font-bold text-xs text-primary">
                               {['OUT_TO_CARRIERS', 'RE_BID_ROUND'].includes(quote.status) ? (
@@ -242,7 +242,7 @@ const Dashboard = () => {
                 <div>
                   <h3 className="text-lg font-bold text-on-surface">Quote Details: {activeQuote.id}</h3>
                   <p className="text-xs text-on-surface-variant">
-                    {activeQuote.customer?.company_name || activeQuote.customer?.name} | {activeQuote.origin} &rarr; {activeQuote.destination} | {activeQuote.weight_lbs.toLocaleString()} lbs
+                    {activeQuote.customer?.company_name || activeQuote.customer?.name} | {activeQuote.origin} &rarr; {activeQuote.destination} | {(activeQuote.weight_lbs || 0).toLocaleString()} lbs
                   </p>
                 </div>
               </div>
@@ -268,7 +268,7 @@ const Dashboard = () => {
                 </div>
                 <div className="bg-black/20 p-4 rounded-xl border border-white/5">
                   <p className="text-[10px] text-on-surface-variant uppercase tracking-widest mb-1">Sell Price (Client Target)</p>
-                  <p className="font-bold text-primary">${activeQuote.sell_price.toLocaleString()}</p>
+                  <p className="font-bold text-primary">${(activeQuote.sell_price || 0).toLocaleString()}</p>
                 </div>
               </div>
 
@@ -286,7 +286,7 @@ const Dashboard = () => {
                     </div>
                     <div className="border-l border-primary/20 pl-8">
                       <p className="text-[10px] text-primary/70 uppercase mb-1">Historical Avg Lane Price</p>
-                      <p className="text-2xl font-bold text-on-surface">${historicalAvg.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-on-surface">${(historicalAvg || 0).toLocaleString()}</p>
                     </div>
                   </div>
                   <div className="flex flex-col items-end">
@@ -413,7 +413,7 @@ const Dashboard = () => {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className={`font-bold ${isWinning ? 'text-secondary' : 'text-on-surface'}`}>${bid.bid_amount.toLocaleString()}</p>
+                            <p className={`font-bold ${isWinning ? 'text-secondary' : 'text-on-surface'}`}>${(bid.bid_amount || 0).toLocaleString()}</p>
                             <p className="text-[10px] text-on-surface-variant">{bid.service_level || 'Standard LTL'}</p>
                           </div>
                         </div>

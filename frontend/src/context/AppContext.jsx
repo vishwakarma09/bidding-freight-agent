@@ -15,8 +15,20 @@ export const AppProvider = ({ children }) => {
   const [historicalRag, setHistoricalRag] = useState([])
   const [selectedTab, setSelectedTab] = useState('landing')
   const [notifications, setNotifications] = useState([])
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [user, setUser] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const savedEmail = localStorage.getItem('userEmail')
+    if (savedEmail) {
+      if (api.default && api.default.defaults) {
+        api.default.defaults.headers.common['X-User-Email'] = savedEmail
+      }
+      return true
+    }
+    return false
+  })
+  const [user, setUser] = useState(() => {
+    const savedEmail = localStorage.getItem('userEmail')
+    return savedEmail ? { email: savedEmail, name: savedEmail.split('@')[0] } : null
+  })
 
   const addNotification = (message, type = 'success') => {
     const id = Date.now()
@@ -130,6 +142,7 @@ export const AppProvider = ({ children }) => {
   }
 
   const login = (email, password) => {
+    localStorage.setItem('userEmail', email)
     setIsAuthenticated(true)
     setUser({ email, name: email.split('@')[0] })
     if (api.default && api.default.defaults) {
@@ -140,6 +153,7 @@ export const AppProvider = ({ children }) => {
   }
 
   const logout = () => {
+    localStorage.removeItem('userEmail')
     setIsAuthenticated(false)
     setUser(null)
     if (api.default && api.default.defaults && api.default.defaults.headers.common['X-User-Email']) {

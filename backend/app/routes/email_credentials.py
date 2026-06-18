@@ -11,8 +11,17 @@ from ..security_utils import encrypt_password, decrypt_password
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/email-credentials", tags=["Email Credentials"])
 
+def clean_str(val: str) -> str:
+    if not val:
+        return ""
+    # Strip normal spaces, non-breaking spaces (\xa0), tabs, newlines
+    return val.strip().replace(" ", "").replace("\xa0", "").replace("\t", "").replace("\n", "").replace("\r", "")
+
 def check_smtp(host: str, port: int, email: str, password: str):
     try:
+        host = clean_str(host)
+        email = clean_str(email)
+        password = clean_str(password)
         if port == 465:
             server = smtplib.SMTP_SSL(host, port, timeout=5)
         else:
@@ -21,16 +30,25 @@ def check_smtp(host: str, port: int, email: str, password: str):
         server.login(email, password)
         server.quit()
         return True, "SMTP connection OK"
+    except UnicodeEncodeError as e:
+        logger.error(f"SMTP encoding failed: {e}")
+        return False, "Password or email contains invalid non-ASCII characters (e.g. ellipsis, curly quotes, or copy-paste artifacts). Please re-type it manually."
     except Exception as e:
         logger.error(f"SMTP verification failed: {e}")
         return False, str(e)
 
 def check_imap(host: str, port: int, email: str, password: str):
     try:
+        host = clean_str(host)
+        email = clean_str(email)
+        password = clean_str(password)
         mail = imaplib.IMAP4_SSL(host, port, timeout=5)
         mail.login(email, password)
         mail.logout()
         return True, "IMAP connection OK"
+    except UnicodeEncodeError as e:
+        logger.error(f"IMAP encoding failed: {e}")
+        return False, "Password or email contains invalid non-ASCII characters (e.g. ellipsis, curly quotes, or copy-paste artifacts). Please re-type it manually."
     except Exception as e:
         logger.error(f"IMAP verification failed: {e}")
         return False, str(e)
@@ -54,27 +72,27 @@ def save_credentials(
     creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
     if creds:
         creds.email_provider = payload.email_provider
-        creds.email = payload.email
-        creds.smtp_host = payload.smtp_host
+        creds.email = clean_str(payload.email)
+        creds.smtp_host = clean_str(payload.smtp_host)
         creds.smtp_port = payload.smtp_port
         if payload.smtp_password != "••••••••••••":
-            creds.encrypted_smtp_password = encrypt_password(payload.smtp_password)
-        creds.imap_host = payload.imap_host
+            creds.encrypted_smtp_password = encrypt_password(clean_str(payload.smtp_password))
+        creds.imap_host = clean_str(payload.imap_host)
         creds.imap_port = payload.imap_port
         if payload.imap_password != "••••••••••••":
-            creds.encrypted_imap_password = encrypt_password(payload.imap_password)
+            creds.encrypted_imap_password = encrypt_password(clean_str(payload.imap_password))
     else:
-        smtp_pwd = payload.smtp_password if payload.smtp_password != "••••••••••••" else ""
-        imap_pwd = payload.imap_password if payload.imap_password != "••••••••••••" else ""
+        smtp_pwd = clean_str(payload.smtp_password) if payload.smtp_password != "••••••••••••" else ""
+        imap_pwd = clean_str(payload.imap_password) if payload.imap_password != "••••••••••••" else ""
         
         creds = EmailCredential(
             user_email=x_user_email,
             email_provider=payload.email_provider,
-            email=payload.email,
-            smtp_host=payload.smtp_host,
+            email=clean_str(payload.email),
+            smtp_host=clean_str(payload.smtp_host),
             smtp_port=payload.smtp_port,
             encrypted_smtp_password=encrypt_password(smtp_pwd),
-            imap_host=payload.imap_host,
+            imap_host=clean_str(payload.imap_host),
             imap_port=payload.imap_port,
             encrypted_imap_password=encrypt_password(imap_pwd)
         )
@@ -99,20 +117,38 @@ def delete_credentials(
 
 @router.post("/test")
 def test_credentials(
-    payload: EmailCredentialCreate
+    payload: EmailCredentialCreate,
+    x_user_email: str = Header(..., alias="X-User-Email"),
+    db: Session = Depends(get_db)
 ):
+    existing = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
+    
+    smtp_password = payload.smtp_password
+    if smtp_password == "••••••••••••" or not smtp_password:
+        if existing and existing.encrypted_smtp_password:
+            smtp_password = decrypt_password(existing.encrypted_smtp_password)
+        else:
+            smtp_password = ""
+            
+    imap_password = payload.imap_password
+    if imap_password == "••••••••••••" or not imap_password:
+        if existing and existing.encrypted_imap_password:
+            imap_password = decrypt_password(existing.encrypted_imap_password)
+        else:
+            imap_password = ""
+
     smtp_ok, smtp_err = check_smtp(
         payload.smtp_host, 
         payload.smtp_port, 
         payload.email, 
-        payload.smtp_password
+        smtp_password
     )
     
     imap_ok, imap_err = check_imap(
         payload.imap_host, 
         payload.imap_port, 
         payload.email, 
-        payload.imap_password
+        imap_password
     )
     
     return {

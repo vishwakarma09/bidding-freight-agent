@@ -18,6 +18,11 @@ const AppContent = () => {
   const publicTabs = ['landing', 'pricing', 'login', 'register']
   const isPublicPage = publicTabs.includes(selectedTab)
 
+  const authRef = React.useRef(isAuthenticated)
+  React.useEffect(() => {
+    authRef.current = isAuthenticated
+  }, [isAuthenticated])
+
   // Synchronize URL path with selectedTab
   React.useEffect(() => {
     const pathMap = {
@@ -37,7 +42,7 @@ const AppContent = () => {
       const tabFromPath = pathMap[currentPath] || 'landing'
       
       const publicTabsList = ['landing', 'pricing', 'login', 'register']
-      if (!isAuthenticated && !publicTabsList.includes(tabFromPath)) {
+      if (!authRef.current && !publicTabsList.includes(tabFromPath)) {
         setSelectedTab('landing')
         window.history.replaceState({}, '', '/')
       } else {
@@ -50,9 +55,16 @@ const AppContent = () => {
 
     window.addEventListener('popstate', handlePopState)
     return () => window.removeEventListener('popstate', handlePopState)
-  }, [isAuthenticated])
+  }, [])
+
+  const isFirstRender = React.useRef(true)
 
   React.useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     const tabToPathMap = {
       'landing': '/',
       'pricing': '/pricing',
