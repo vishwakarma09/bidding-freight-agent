@@ -20,7 +20,7 @@ def send_email(to_email: str, subject: str, body_html: str, from_email: str = No
     Sends an SMTP email. In dev, this routes directly to Mailpit.
     """
     if not from_email:
-        from_email = settings.BROKER_EMAIL or "broker@amzprep.com"
+        from_email = settings.BROKER_EMAIL or "broker@dispatch.owera.ca"
         
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -218,7 +218,7 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
         }
 
     # 3. Unrecognized format
-    raise ValueError("Unrecognized email. To create a quote, send to broker@amzprep.com. To submit a carrier bid, ensure the subject contains 'Q-XXXX'.")
+    raise ValueError("Unrecognized email. To create a quote, send to broker@dispatch.owera.ca. To submit a carrier bid, ensure the subject contains 'Q-XXXX'.")
 
 
 def poll_and_ingest_emails(db: Session):

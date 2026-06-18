@@ -70,7 +70,7 @@ const PricingPage = () => {
               <Zap className="text-primary" size={20} />
             </div>
             <div>
-              <span className="font-bold text-xl text-primary tracking-tight">CargoFlux</span>
+              <span className="font-bold text-xl text-primary tracking-tight">Dispatch</span>
               <p className="text-[9px] uppercase tracking-widest text-secondary font-bold -mt-0.5">Enterprise Logistics</p>
             </div>
           </div>
@@ -190,7 +190,7 @@ const PricingPage = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center text-xs text-on-surface-variant/50 border-t border-white/5 max-w-7xl mx-auto">
-        &copy; {new Date().getFullYear()} CargoFlux Inc. All rights reserved. AES-256 encrypted bidding channel.
+        &copy; {new Date().getFullYear()} Dispatch Inc. All rights reserved. AES-256 encrypted bidding channel.
       </footer>
     </div>
   )

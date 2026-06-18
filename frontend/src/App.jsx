@@ -167,9 +167,9 @@ const AppContent = () => {
       {/* Sidebar Navigation */}
       <aside className="app-sidebar">
         <div className="sidebar-brand">
-          <div className="brand-logo">CF</div>
+          <div className="brand-logo">D</div>
           <div className="brand-details">
-            <span className="brand-name">CARGOFLUX</span>
+            <span className="brand-name">DISPATCH</span>
             <span className="brand-sub">Mission Control</span>
           </div>
         </div>

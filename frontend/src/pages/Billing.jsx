@@ -99,7 +99,7 @@ const Billing = () => {
                 {billingQuotes.map(quote => (
                   <tr key={quote.id} className="table-tr">
                     <td className="table-td" style={{ fontFamily: 'var(--font-display)', fontWeight: 'bold' }}>{quote.id}</td>
-                    <td className="table-td">{quote.customer?.name?.replace("AMZPrep ", "")?.split(" (")?.[0] || 'Guest'}</td>
+                    <td className="table-td">{quote.customer?.name?.replace("Dispatch ", "")?.split(" (")?.[0] || 'Guest'}</td>
                     <td className="table-td">{quote.winning_carrier?.name}</td>
                     <td className="table-td" style={{ textAlign: 'right', fontFamily: 'var(--font-display)' }}>
                       ${quote.cost_price.toFixed(2)}

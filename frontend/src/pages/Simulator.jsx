@@ -40,13 +40,13 @@ const Simulator = () => {
       name: "Standard LTL - LA to Chicago",
       sender: "customer_b@example.com",
       subject: "Freight Quote Request: LTL shipment to Chicago",
-      body: "Hi broker,\n\nWe need a rate quote for shipping 4 pallets of consumer goods from Los Angeles, CA to Chicago, IL.\n\nWeight is 3500 lbs, Class 70. Accessorials: liftgate required at delivery. Target pickup date is June 28, 2026.\n\nThanks,\nAMZPrep Client B"
+      body: "Hi broker,\n\nWe need a rate quote for shipping 4 pallets of consumer goods from Los Angeles, CA to Chicago, IL.\n\nWeight is 3500 lbs, Class 70. Accessorials: liftgate required at delivery. Target pickup date is June 28, 2026.\n\nThanks,\nDispatch Client B"
     },
     {
       name: "Hazmat LTL - Houston to NY",
       sender: "customer_a@example.com",
       subject: "Hazmat Class 9 rate query",
-      body: "Hello,\n\nPlease provide carrier pricing for a hazmat shipment of class 9 batteries from Houston, TX to New York, NY.\nTotal weight is 4800 lbs, freight class 85. Require liftgate pickup and inside delivery. Needed pickup June 29.\n\nRegards,\nAMZPrep Client A"
+      body: "Hello,\n\nPlease provide carrier pricing for a hazmat shipment of class 9 batteries from Houston, TX to New York, NY.\nTotal weight is 4800 lbs, freight class 85. Require liftgate pickup and inside delivery. Needed pickup June 29.\n\nRegards,\nDispatch Client A"
     },
     {
       name: "Expedited LTL - Seattle to SF",
@@ -165,7 +165,7 @@ const Simulator = () => {
     try {
       await handleSendMockEmail(
         t.sender,
-        'broker@amzprep.com',
+        'broker@dispatch.owera.ca',
         t.subject,
         t.body
       )
@@ -205,7 +205,7 @@ const Simulator = () => {
     try {
       await handleSendMockEmail(
         selectedConnector.contact_email,
-        'broker@amzprep.com',
+        'broker@dispatch.owera.ca',
         bidSubject,
         bidBody
       )
@@ -234,7 +234,7 @@ const Simulator = () => {
     try {
       await handleSendMockEmail(
         senderEmail,
-        'broker@amzprep.com',
+        'broker@dispatch.owera.ca',
         subject,
         body
       )
@@ -350,7 +350,7 @@ const Simulator = () => {
                   1. Customer Request
                 </h4>
                 <p className="text-[11px] text-on-surface-variant leading-relaxed">
-                  Simulate a client freight quote request inbound email to AMZPrep.
+                  Simulate a client freight quote request inbound email to Dispatch.
                 </p>
                 <select 
                   className="w-full bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none"

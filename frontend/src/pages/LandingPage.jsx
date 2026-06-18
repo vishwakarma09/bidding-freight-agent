@@ -67,10 +67,10 @@ const LandingPage = () => {
           {/* Logo Brand */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => setSelectedTab('landing')}>
             <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/30 text-primary font-extrabold text-lg shadow-lg">
-              CF
+              D
             </div>
             <div>
-              <span className="font-bold text-xl text-primary tracking-tight">CargoFlux</span>
+              <span className="font-bold text-xl text-primary tracking-tight">Dispatch</span>
               <p className="text-[9px] uppercase tracking-widest text-secondary font-bold -mt-0.5">Enterprise Logistics</p>
             </div>
           </div>
@@ -183,7 +183,7 @@ const LandingPage = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-2xl blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
               <div className="relative glass-panel rounded-2xl overflow-hidden premium-border aspect-video flex items-center justify-center bg-black/40">
                 <img 
-                  alt="CargoFlux Intelligent Pipeline" 
+                  alt="Dispatch Intelligent Pipeline" 
                   className="w-full h-full object-cover opacity-80" 
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0WaOlNuW61wLMjQ4Buvn-rh3d_VhectnFa2-OXFUqB-cfIt4o0dBMpRG5aVMpobZzlqPfojLT4QSsZm_ye9auHKHKJVJL31h4ziRvzhBVbr04zzpuTXsH9ugPNX119vbWWaDjoOkfq9eYOwp7PPHYeSQ60N-nGslBO5P5mFiFqTmRzr4l9jpGjI_WULWFeVGq9vDHL_KDctk3WHgvTzj4mqEIc0mDHf5Adp-ZInoLXSUYzSpMwwQ2yObTcBdMU0IEI9fwbTI_hgY"
                 />
@@ -271,7 +271,7 @@ const LandingPage = () => {
                 </div>
                 <h3 className="text-on-surface text-3xl font-bold mb-4">Invoice Ledger &amp; BOLs</h3>
                 <p className="text-on-surface-variant text-lg leading-relaxed">
-                  Auto-generated invoice drafts and Bill of Lading documents. CargoFlux handles the paperwork, ensuring 100% compliance and auditability in every transaction.
+                  Auto-generated invoice drafts and Bill of Lading documents. Dispatch handles the paperwork, ensuring 100% compliance and auditability in every transaction.
                 </p>
               </div>
               <div className="w-full md:w-1/3 glass-panel bg-black/40 border-dashed border-2 border-white/10 p-6 rounded-2xl relative overflow-hidden">
@@ -299,7 +299,7 @@ const LandingPage = () => {
             <div className="relative max-w-4xl mx-auto">
               <span className="material-symbols-outlined text-primary text-[64px] mb-10 icon-glow opacity-50">format_quote</span>
               <blockquote className="text-3xl md:text-4xl text-on-surface mb-12 italic leading-snug">
-                "CargoFlux has transformed our brokerage operations, cutting parsing time by 90%. We can now handle 5x the volume with the same team size. It's the competitive edge we needed."
+                "Dispatch has transformed our brokerage operations, cutting parsing time by 90%. We can now handle 5x the volume with the same team size. It's the competitive edge we needed."
               </blockquote>
               <div className="flex flex-col items-center">
                 <div className="w-20 h-20 rounded-full premium-border p-1.5 mb-6">
@@ -323,7 +323,7 @@ const LandingPage = () => {
               Ready to scale your terminal?
             </h2>
             <p className="text-on-surface-variant text-xl mb-12 max-w-2xl mx-auto relative z-10 leading-relaxed">
-              Join the next generation of autonomous logistics. Set up your CargoFlux instance and go live in minutes.
+              Join the next generation of autonomous logistics. Set up your Dispatch instance and go live in minutes.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-6 relative z-10">
               <button 
@@ -349,9 +349,9 @@ const LandingPage = () => {
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center border border-primary/30 text-primary font-extrabold text-lg">
-                CF
+                D
               </div>
-              <span className="font-bold text-xl text-primary tracking-tight">CargoFlux</span>
+              <span className="font-bold text-xl text-primary tracking-tight">Dispatch</span>
             </div>
             <p className="text-sm text-on-surface-variant leading-relaxed">
               Autonomous logistics execution pipeline built for freight brokers and carriers.
@@ -383,7 +383,7 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="max-w-[1440px] mx-auto mt-20 pt-8 border-t border-white/5 text-center text-xs text-on-surface-variant/50">
-          &copy; {new Date().getFullYear()} CargoFlux Inc. All rights reserved. AES-256 encrypted bidding channel.
+          &copy; {new Date().getFullYear()} Dispatch Inc. All rights reserved. AES-256 encrypted bidding channel.
         </div>
       </footer>
     </div>

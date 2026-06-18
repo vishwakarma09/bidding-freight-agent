@@ -89,9 +89,9 @@ def startup_event():
         if db.query(Customer).count() == 0:
             logger.info("Seeding default Customers A, B, and C...")
             customers = [
-                Customer(name="AMZPrep Customer A (5% Markup)", email="customer_a@example.com", default_markup_percent=5.0),
-                Customer(name="AMZPrep Customer B (12% Markup)", email="customer_b@example.com", default_markup_percent=12.0),
-                Customer(name="AMZPrep Customer C (30% Markup)", email="customer_c@example.com", default_markup_percent=30.0)
+                Customer(name="Dispatch Customer A (5% Markup)", email="customer_a@example.com", default_markup_percent=5.0),
+                Customer(name="Dispatch Customer B (12% Markup)", email="customer_b@example.com", default_markup_percent=12.0),
+                Customer(name="Dispatch Customer C (30% Markup)", email="customer_c@example.com", default_markup_percent=30.0)
             ]
             db.add_all(customers)
             db.commit()
@@ -152,9 +152,9 @@ def startup_event():
             logger.info("Seeding default EmailCredential for Mailpit...")
             from .security_utils import encrypt_password
             default_creds = EmailCredential(
-                user_email="broker@amzprep.com",
+                user_email="broker@dispatch.owera.ca",
                 email_provider="Mailpit",
-                email="broker@amzprep.com",
+                email="broker@dispatch.owera.ca",
                 smtp_host="mailpit",
                 smtp_port=1025,
                 encrypted_smtp_password=encrypt_password("devmode"),

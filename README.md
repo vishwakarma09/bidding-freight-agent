@@ -1,4 +1,4 @@
-# AMZPrep Automated Freight Bidding Engine
+# Dispatch Automated Freight Bidding Engine
 
 An automated, competitive, time-bound carrier bidding and customer freight quoting platform designed to replace manual email workflows.
 

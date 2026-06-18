@@ -6,8 +6,8 @@ from .config import settings
 
 def get_fernet_key() -> bytes:
     # Use PBKDF2 to derive a cryptographically strong 32-byte key
-    secret = getattr(settings, "SECRET_KEY", "cargoflux_fallback_super_secret_key_2026")
-    salt = b"cargoflux_freight_security_salt_987654"
+    secret = getattr(settings, "SECRET_KEY", "dispatch_fallback_super_secret_key_2026")
+    salt = b"dispatch_freight_security_salt_987654"
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=32,

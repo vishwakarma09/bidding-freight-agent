@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     CEREBRAS_API_KEY: str = "YOUR_CEREBRAS_API_KEY"
     
     # Custom business rules
-    BROKER_EMAIL: str = "broker@amzprep.com"
+    BROKER_EMAIL: str = "broker@dispatch.owera.ca"
     CARRIER_EMAILS: str = "carrier_ups@mailpit.local,carrier_fedex@mailpit.local,carrier_dhl@mailpit.local,carrier_amz@mailpit.local,carrier_od@mailpit.local"
 
     class Config:

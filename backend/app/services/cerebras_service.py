@@ -196,7 +196,7 @@ def run_customer_regex_fallback(subject: str, body: str) -> dict:
         pickup_date = (datetime.date.today() + datetime.timedelta(days=3)).isoformat()
 
     return {
-        "customer_name_guess": "AMZPrep Customer",
+        "customer_name_guess": "Dispatch Customer",
         "origin": origin,
         "destination": destination,
         "weight_lbs": weight,

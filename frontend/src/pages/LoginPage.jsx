@@ -4,7 +4,7 @@ import { Zap, ArrowRight, Mail, Lock } from 'lucide-react'
 
 const LoginPage = () => {
   const { login, setSelectedTab } = useApp()
-  const [email, setEmail] = useState('broker@amzprep.com')
+  const [email, setEmail] = useState('broker@dispatch.owera.ca')
   const [password, setPassword] = useState('password123')
 
   const handleSubmit = (e) => {
@@ -111,7 +111,7 @@ const LoginPage = () => {
 
       {/* Footer */}
       <footer className="py-8 text-center text-xs text-on-surface-variant/50 border-t border-white/5 max-w-7xl mx-auto w-full">
-        &copy; {new Date().getFullYear()} CargoFlux Inc. All rights reserved. AES-256 encrypted bidding channel.
+        &copy; {new Date().getFullYear()} Dispatch Inc. All rights reserved. AES-256 encrypted bidding channel.
       </footer>
     </div>
   )
