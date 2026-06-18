@@ -147,6 +147,24 @@ def startup_event():
             ]
             db.add_all(connectors_list)
             db.commit()
+
+        if db.query(EmailCredential).count() == 0:
+            logger.info("Seeding default EmailCredential for Mailpit...")
+            from .security_utils import encrypt_password
+            default_creds = EmailCredential(
+                user_email="broker@amzprep.com",
+                email_provider="Mailpit",
+                email="broker@amzprep.com",
+                smtp_host="mailpit",
+                smtp_port=1025,
+                encrypted_smtp_password=encrypt_password("devmode"),
+                imap_host="mailpit",
+                imap_port=143,
+                encrypted_imap_password=encrypt_password("devmode"),
+                use_dev_mode=True
+            )
+            db.add(default_creds)
+            db.commit()
     except Exception as e:
         logger.error(f"Failed to seed initial data: {e}")
     finally:

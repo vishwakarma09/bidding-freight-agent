@@ -8,6 +8,7 @@ const Simulator = () => {
     quotes, 
     carriers, 
     customers, 
+    connectors,
     handleSendMockEmail, 
     handleFastForwardTimers, 
     handleResetDatabase, 
@@ -17,7 +18,7 @@ const Simulator = () => {
 
   const [selectedTemplateIndex, setSelectedTemplateIndex] = useState(0)
   const [activeQuoteId, setActiveQuoteId] = useState('')
-  const [carrierId, setCarrierId] = useState('')
+  const [connectorId, setConnectorId] = useState('')
   const [bidAmount, setBidAmount] = useState('1240')
   
   // State variables for Customer Reply step
@@ -59,8 +60,14 @@ const Simulator = () => {
   const fetchMailpitEmails = async () => {
     setMailpitLoading(true)
     try {
-      const res = await axios.get('http://localhost:18025/api/v1/messages')
-      setMailpitEmails(res.data.messages || [])
+      try {
+        const res = await axios.get('http://localhost:8025/api/v1/messages')
+        setMailpitEmails(res.data.messages || [])
+      } catch (err) {
+        // Fallback to container port 18025
+        const res = await axios.get('http://localhost:18025/api/v1/messages')
+        setMailpitEmails(res.data.messages || [])
+      }
     } catch (err) {
       console.warn("Mailpit API offline or unreachable from client.")
     } finally {
@@ -145,11 +152,13 @@ const Simulator = () => {
     }
   }, [awaitingApprovalQuotes, customerReplyQuoteId])
 
+  const activeConnectors = connectors ? connectors.filter(c => c.status === 'CONNECTED') : []
+
   useEffect(() => {
-    if (carriers.length > 0 && !carrierId) {
-      setCarrierId(carriers[0].id.toString())
+    if (activeConnectors.length > 0 && !connectorId) {
+      setConnectorId(activeConnectors[0].id.toString())
     }
-  }, [carriers, carrierId])
+  }, [activeConnectors, connectorId])
 
   const handleTriggerInquiry = async () => {
     const t = templates[selectedTemplateIndex]
@@ -173,8 +182,8 @@ const Simulator = () => {
       return
     }
 
-    const selectedCarrier = carriers.find(c => c.id === parseInt(carrierId))
-    if (!selectedCarrier) return
+    const selectedConnector = activeConnectors.find(c => c.id === parseInt(connectorId))
+    if (!selectedConnector) return
 
     const selectedQuote = quotes.find(q => q.id === activeQuoteId)
     if (!selectedQuote) return
@@ -190,12 +199,12 @@ const Simulator = () => {
       Notes: We can service this lane.
       
       Best,
-      ${selectedCarrier.name} pricing desk
+      ${selectedConnector.name} pricing desk
     `
 
     try {
       await handleSendMockEmail(
-        selectedCarrier.email,
+        selectedConnector.contact_email,
         'broker@amzprep.com',
         bidSubject,
         bidBody
@@ -387,12 +396,15 @@ const Simulator = () => {
                   </select>
                   <select 
                     className="bg-surface-container border border-white/10 rounded-lg py-2 px-3 text-sm text-on-surface focus:ring-1 focus:ring-primary outline-none w-full"
-                    value={carrierId}
-                    onChange={e => setCarrierId(e.target.value)}
+                    value={connectorId}
+                    onChange={e => setConnectorId(e.target.value)}
                   >
-                    {carriers.map(c => (
-                      <option key={c.id} value={c.id}>{c.name.split(' ')[0]}</option>
+                    {activeConnectors.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
+                    {activeConnectors.length === 0 && (
+                      <option value="">No Active Channels</option>
+                    )}
                   </select>
                 </div>
                 <div className="relative">

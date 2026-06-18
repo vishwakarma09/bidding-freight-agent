@@ -13,11 +13,61 @@ def send_mock_email(payload: SimulateEmailRequest, db: Session = Depends(get_db)
     """
     Simulates receiving an email (either a customer inquiry, a carrier bid, or a customer approval/rejection).
     """
+    from ..config import settings
+    from ..models import EmailCredential, ProcessedEmail
+    from ..services.email_service import send_email
+
     try:
+        # 1. Determine the target recipient based on configured credentials
+        creds = db.query(EmailCredential).first()
+        target_recipient = creds.email if (creds and creds.email) else payload.recipient
+
+        # 2. Route the email via SMTP first so it gets captured by Mailpit
+        send_email(
+            to_email=target_recipient,
+            subject=payload.subject,
+            body_html=payload.body,
+            from_email=payload.sender
+        )
+
+        # 3. Wait slightly and find the message ID in Mailpit to mark it as processed
+        import time
+        import httpx
+        time.sleep(0.25)
+        mailpit_host = settings.SMTP_HOST
+        if mailpit_host == "mailpit":
+            mailpit_url = "http://mailpit:8025/api/v1/messages"
+        else:
+            mailpit_url = f"http://{mailpit_host}:8025/api/v1/messages"
+
+        try:
+            r = httpx.get(mailpit_url, params={"limit": 10}, timeout=2.0)
+            if r.status_code == 200:
+                messages = r.json().get("messages", [])
+                for msg in messages:
+                    msg_id = msg.get("ID")
+                    already_processed = db.query(ProcessedEmail).filter(ProcessedEmail.id == msg_id).first()
+                    if not already_processed:
+                        msg_subj = msg.get("Subject", "").strip().lower()
+                        target_subj = payload.subject.strip().lower()
+                        
+                        msg_from = msg.get("From", {}).get("Address", "").strip().lower()
+                        target_from = payload.sender.strip().lower()
+                        
+                        if (target_subj in msg_subj or msg_subj in target_subj) and (target_from in msg_from or msg_from in target_from):
+                            processed = ProcessedEmail(id=msg_id)
+                            db.add(processed)
+                            db.commit()
+                            logger.info(f"Marked Mailpit message {msg_id} as processed in DB")
+                            break
+        except Exception as ex:
+            logger.warning(f"Could not register email with Mailpit ID: {ex}")
+
+        # 4. Process the incoming email directly to return the immediate response
         return process_incoming_email(
             db, 
             payload.sender, 
-            payload.recipient, 
+            target_recipient, 
             payload.subject, 
             payload.body
         )
@@ -80,12 +130,13 @@ def reset_database(db: Session = Depends(get_db)):
     """
     Clears all quote-related tables to reset the simulator state.
     """
-    from ..models import StateTransition, CarrierBid, FreightQuote, ProcessedEmail
+    from ..models import StateTransition, CarrierBid, FreightQuote, ProcessedEmail, RequestForQuote
     
     try:
-        # Delete state transitions, bids, quotes, processed_emails
+        # Delete state transitions, bids, quotes, processed_emails, rfqs
         db.query(StateTransition).delete()
         db.query(CarrierBid).delete()
+        db.query(RequestForQuote).delete()
         # Due to cascade relationships, delete FreightQuote
         db.query(FreightQuote).delete()
         db.query(ProcessedEmail).delete()

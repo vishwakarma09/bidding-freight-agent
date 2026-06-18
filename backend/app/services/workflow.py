@@ -74,6 +74,19 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
                 subject=f"RFQ: Freight Quote {quote.id} - {quote.origin} to {quote.destination}",
                 body_html=email_body
             )
+            # Store RFQ in DB
+            from ..models import RequestForQuote
+            rfq = RequestForQuote(
+                freight_quote_id=quote.id,
+                carrier_id=carrier.id,
+                supplier_id=carrier.id,
+                status="SENT",
+                sent_at=datetime.datetime.utcnow(),
+                subject=f"RFQ: Freight Quote {quote.id} - {quote.origin} to {quote.destination}",
+                body=email_body
+            )
+            db.add(rfq)
+        db.commit()
 
     elif to_status == "RE_BID_ROUND":
         # 1. Identify the lowest rate from Round 1
@@ -127,6 +140,17 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
                     subject=f"Bid Leading: Quote {quote.id}",
                     body_html=lead_body
                 )
+                from ..models import RequestForQuote
+                rfq = RequestForQuote(
+                    freight_quote_id=quote.id,
+                    carrier_id=carrier.id,
+                    supplier_id=carrier.id,
+                    status="LEADING_NOTIFIED",
+                    sent_at=datetime.datetime.utcnow(),
+                    subject=f"Bid Leading: Quote {quote.id}",
+                    body=lead_body
+                )
+                db.add(rfq)
                 continue
 
             rebid_body = f"""
@@ -139,6 +163,18 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
                 subject=f"RE-BID: Quote {quote.id} - Current Low ${lowest_bid.bid_amount}",
                 body_html=rebid_body
             )
+            from ..models import RequestForQuote
+            rfq = RequestForQuote(
+                freight_quote_id=quote.id,
+                carrier_id=carrier.id,
+                supplier_id=carrier.id,
+                status="RE_BID_SENT",
+                sent_at=datetime.datetime.utcnow(),
+                subject=f"RE-BID: Quote {quote.id} - Current Low ${lowest_bid.bid_amount}",
+                body=rebid_body
+            )
+            db.add(rfq)
+        db.commit()
 
     elif to_status == "QUOTE_SENT":
         # 1. Lock winning rate

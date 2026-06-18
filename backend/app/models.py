@@ -85,6 +85,7 @@ class FreightQuote(Base):
     winning_carrier = relationship("Carrier", back_populates="quotes_won")
     bids = relationship("CarrierBid", back_populates="quote", cascade="all, delete-orphan")
     transitions = relationship("StateTransition", back_populates="quote", cascade="all, delete-orphan")
+    rfqs = relationship("RequestForQuote", back_populates="quote", cascade="all, delete-orphan")
 
 
 class CarrierBid(Base):
@@ -161,4 +162,20 @@ class ProcessedEmail(Base):
 
     id = Column(String(255), primary_key=True, index=True)
     processed_at = Column(DateTime, default=datetime.datetime.utcnow)
+
+
+class RequestForQuote(Base):
+    __tablename__ = "rfqs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    freight_quote_id = Column(String, ForeignKey("freight_quotes.id", ondelete="CASCADE"), nullable=False)
+    carrier_id = Column(Integer, ForeignKey("carriers.id", ondelete="CASCADE"), nullable=False)
+    supplier_id = Column(Integer, nullable=False)
+    status = Column(String, default="SENT", nullable=False)
+    sent_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+    subject = Column(String, nullable=True)
+    body = Column(Text, nullable=True)
+
+    quote = relationship("FreightQuote", back_populates="rfqs")
+    carrier = relationship("Carrier")
 

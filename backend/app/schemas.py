@@ -78,6 +78,19 @@ class StateTransitionResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class RequestForQuoteResponse(BaseModel):
+    id: int
+    freight_quote_id: str
+    carrier_id: int
+    supplier_id: int
+    status: str
+    sent_at: datetime
+    subject: Optional[str] = None
+    body: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
 
 class FreightQuoteResponse(BaseModel):
     id: str
@@ -111,6 +124,7 @@ class FreightQuoteResponse(BaseModel):
     updated_at: datetime
     bids: List[CarrierBidResponse] = []
     transitions: List[StateTransitionResponse] = []
+    rfqs: List[RequestForQuoteResponse] = []
 
     class Config:
         from_attributes = True

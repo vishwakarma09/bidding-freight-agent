@@ -235,7 +235,11 @@ def poll_and_ingest_emails(db: Session):
             if creds.use_dev_mode:
                 try:
                     # Poll Mailpit REST API
-                    url = "http://mailpit:8025/api/v1/messages"
+                    mailpit_host = settings.SMTP_HOST
+                    if mailpit_host == "mailpit":
+                        url = "http://mailpit:8025/api/v1/messages"
+                    else:
+                        url = f"http://{mailpit_host}:8025/api/v1/messages"
                     response = httpx.get(url, params={"limit": 50}, timeout=5.0)
                     if response.status_code != 200:
                         logger.warning(f"Mailpit API returned status {response.status_code}")
