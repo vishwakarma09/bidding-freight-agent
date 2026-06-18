@@ -18,6 +18,60 @@ const AppContent = () => {
   const publicTabs = ['landing', 'pricing', 'login', 'register']
   const isPublicPage = publicTabs.includes(selectedTab)
 
+  // Synchronize URL path with selectedTab
+  React.useEffect(() => {
+    const pathMap = {
+      '/': 'landing',
+      '/pricing': 'pricing',
+      '/login': 'login',
+      '/register': 'register',
+      '/dashboard': 'dashboard',
+      '/connectors': 'connectors_list',
+      '/analytics': 'analytics',
+      '/simulator': 'simulator',
+      '/billing': 'billing'
+    }
+
+    const handlePopState = () => {
+      const currentPath = window.location.pathname
+      const tabFromPath = pathMap[currentPath] || 'landing'
+      
+      const publicTabsList = ['landing', 'pricing', 'login', 'register']
+      if (!isAuthenticated && !publicTabsList.includes(tabFromPath)) {
+        setSelectedTab('landing')
+        window.history.replaceState({}, '', '/')
+      } else {
+        setSelectedTab(tabFromPath)
+      }
+    }
+
+    // Initialize tab from direct URL entry
+    handlePopState()
+
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [isAuthenticated])
+
+  React.useEffect(() => {
+    const tabToPathMap = {
+      'landing': '/',
+      'pricing': '/pricing',
+      'login': '/login',
+      'register': '/register',
+      'dashboard': '/dashboard',
+      'connectors_list': '/connectors',
+      'connector_details': '/connectors',
+      'analytics': '/analytics',
+      'simulator': '/simulator',
+      'billing': '/billing'
+    }
+
+    const targetPath = tabToPathMap[selectedTab] || '/'
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({}, '', targetPath)
+    }
+  }, [selectedTab])
+
   React.useEffect(() => {
     if (isPublicPage || !isAuthenticated) {
       document.body.classList.add('public-body')
