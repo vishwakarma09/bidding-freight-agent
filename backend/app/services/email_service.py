@@ -20,7 +20,7 @@ def send_email(to_email: str, subject: str, body_html: str, from_email: str = No
     Sends an SMTP email. In dev, this routes directly to Mailpit.
     """
     if not from_email:
-        from_email = settings.BROKER_EMAIL or "broker@dispatch.owera.ca"
+        from_email = settings.EMAILS_FROM_EMAIL or settings.BROKER_EMAIL or "broker@dispatch.owera.ca"
         
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -33,15 +33,18 @@ def send_email(to_email: str, subject: str, body_html: str, from_email: str = No
     try:
         # Connect to SMTP
         server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT)
+        # If TLS is enabled, start TLS
+        if settings.SMTP_TLS or settings.SMTP_PORT == 587:
+            server.starttls()
         # If username/password is configured, login (like in production)
         if settings.SMTP_USER and settings.SMTP_PASSWORD:
-            server.starttls()
             server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
             
         server.sendmail(from_email, [to_email], msg.as_string())
         server.quit()
         logger.info(f"Email sent successfully to {to_email} with subject: {subject}")
         return True
+
     except Exception as e:
         logger.error(f"Failed to send email to {to_email}: {e}")
         return False

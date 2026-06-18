@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 1025
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
+    SMTP_TLS: bool = False
+    EMAILS_FROM_EMAIL: Optional[str] = None
+
     
     # Cerebras API Key for fast LLM inference
     CEREBRAS_API_KEY: str = "YOUR_CEREBRAS_API_KEY"
