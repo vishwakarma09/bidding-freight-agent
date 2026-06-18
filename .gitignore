@@ -23,6 +23,8 @@ build/
 .env.test.local
 .env.production.local
 infra/.env
+backend/.env.production
+
 
 # Database state
 postgres_data/
