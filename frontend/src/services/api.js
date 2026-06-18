@@ -39,5 +39,8 @@ export const deleteEmailCredentials = () => api.delete('/email-credentials').the
 export const testEmailCredentials = (payload) => api.post('/email-credentials/test', payload).then(res => res.data)
 export const testExistingEmailCredentials = () => api.post('/email-credentials/test-existing').then(res => res.data)
 
+export const googleSSO = (payload) => api.post('/auth/google-sso', payload).then(res => res.data)
+
 export default api
+
 

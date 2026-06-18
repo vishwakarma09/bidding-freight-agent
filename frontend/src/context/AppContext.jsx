@@ -179,6 +179,25 @@ export const AppProvider = ({ children }) => {
     setSelectedTab('dashboard')
   }
 
+  const loginWithGoogle = async (credentialToken) => {
+    try {
+      const response = await api.googleSSO({ credential: credentialToken })
+      const { user } = response
+      localStorage.setItem('userEmail', user.email)
+      setIsAuthenticated(true)
+      setUser(user)
+      if (api.default && api.default.defaults) {
+        api.default.defaults.headers.common['X-User-Email'] = user.email
+      }
+      addNotification("Logged in with Google successfully!", "success")
+      setSelectedTab('dashboard')
+    } catch (err) {
+      console.error("Google login failed:", err)
+      addNotification("Google Sign-In failed", "error")
+      throw err
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('userEmail')
     setIsAuthenticated(false)
@@ -189,6 +208,7 @@ export const AppProvider = ({ children }) => {
     addNotification("Logged out successfully.", "success")
     setSelectedTab('landing')
   }
+
 
   const handleSaveConnector = async (payload) => {
     try {
@@ -246,9 +266,11 @@ export const AppProvider = ({ children }) => {
 
       user,
       login,
+      loginWithGoogle,
       logout,
       handleSaveConnector,
       handleDeleteConnector
+
     }}>
       {children}
     </AppContext.Provider>

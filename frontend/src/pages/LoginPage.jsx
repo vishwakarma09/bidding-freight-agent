@@ -1,11 +1,51 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { Zap, ArrowRight, Mail, Lock } from 'lucide-react'
 
 const LoginPage = () => {
-  const { login, setSelectedTab } = useApp()
+  const { login, loginWithGoogle, setSelectedTab } = useApp()
   const [email, setEmail] = useState('broker@dispatch.owera.ca')
   const [password, setPassword] = useState('password123')
+  const [error, setError] = useState('')
+
+  const handleGoogleResponse = async (response) => {
+    try {
+      setError('')
+      await loginWithGoogle(response.credential)
+    } catch (err) {
+      console.error("Google login failed:", err)
+      setError(err.response?.data?.detail || "Google Sign-In failed")
+    }
+  }
+
+  useEffect(() => {
+    // Load Google Identity script
+    const script = document.createElement("script")
+    script.src = "https://accounts.google.com/gsi/client"
+    script.async = true
+    script.defer = true
+    document.body.appendChild(script)
+
+    script.onload = () => {
+      if (window.google) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "",
+
+          callback: handleGoogleResponse,
+        })
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          { theme: "outline", size: "large", width: "100%" }
+        )
+      }
+    }
+
+    return () => {
+      if (document.body.contains(script)) {
+        document.body.removeChild(script)
+      }
+    }
+  }, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -13,6 +53,7 @@ const LoginPage = () => {
       login(email, password)
     }
   }
+
 
   return (
     <div className="min-h-screen text-on-surface bg-background mesh-gradient relative flex flex-col justify-between">
@@ -55,7 +96,14 @@ const LoginPage = () => {
             <p className="text-sm text-on-surface-variant mt-2">Sign in to access your freight operations control terminal.</p>
           </div>
 
+          {error && (
+            <div className="mb-6 p-3 rounded-lg bg-red-500/15 text-red-400 border border-red-500/20 text-xs text-center">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
+
             <div className="space-y-2">
               <label className="text-xs uppercase font-bold tracking-wider text-on-surface-variant">Email Address</label>
               <div className="relative flex items-center">
@@ -97,7 +145,23 @@ const LoginPage = () => {
             </button>
           </form>
 
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-surface-container-low px-2 text-on-surface-variant/60 font-bold">Or continue with</span>
+            </div>
+          </div>
+
+          {/* Google Sign-In Button Container */}
+          <div className="flex justify-center w-full mb-6">
+            <div id="google-signin-btn" className="w-full max-w-[320px] min-h-[40px] flex justify-center"></div>
+          </div>
+
           <div className="mt-8 text-center text-sm text-on-surface-variant">
+
             Don't have an account?{' '}
             <button 
               onClick={() => setSelectedTab('register')}
