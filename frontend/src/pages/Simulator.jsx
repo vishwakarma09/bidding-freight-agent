@@ -58,6 +58,12 @@ const Simulator = () => {
 
   // Fetch outgoing emails caught by Mailpit
   const fetchMailpitEmails = async () => {
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    if (!isLocal) {
+      setMailpitEmails([])
+      setMailpitLoading(false)
+      return
+    }
     setMailpitLoading(true)
     try {
       try {
