@@ -52,8 +52,11 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
         quote.first_round_ends_at = datetime.datetime.utcnow() + duration
         db.commit()
 
-        # 2. Email all carriers
-        carriers = db.query(Carrier).all()
+        # 2. Email all carriers belonging to this user
+        carriers_query = db.query(Carrier)
+        if quote.user_id:
+            carriers_query = carriers_query.filter(Carrier.user_id == quote.user_id)
+        carriers = carriers_query.all()
         for carrier in carriers:
             email_body = f"""
             <h3>Freight Bid Request - Quote {quote.id}</h3>
@@ -98,7 +101,10 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
         if not bids_r1:
             # If no bids received, transition straight to quoting with a default high price
             # or extend timer. Let's create a mock bid so the flow doesn't break
-            mock_carrier = db.query(Carrier).first()
+            mock_carrier_query = db.query(Carrier)
+            if quote.user_id:
+                mock_carrier_query = mock_carrier_query.filter(Carrier.user_id == quote.user_id)
+            mock_carrier = mock_carrier_query.first()
             if mock_carrier:
                 bid = CarrierBid(
                     freight_quote_id=quote.id,
@@ -125,8 +131,11 @@ def transition_quote(db: Session, quote: FreightQuote, to_status: str, notes: st
         quote.rebid_round_ends_at = datetime.datetime.utcnow() + duration
         db.commit()
 
-        # 3. Notify other carriers
-        carriers = db.query(Carrier).all()
+        # 3. Notify other carriers belonging to this user
+        carriers_query = db.query(Carrier)
+        if quote.user_id:
+            carriers_query = carriers_query.filter(Carrier.user_id == quote.user_id)
+        carriers = carriers_query.all()
         for carrier in carriers:
             # Skip the carrier who is already the lowest
             if carrier.id == lowest_bid.carrier_id:

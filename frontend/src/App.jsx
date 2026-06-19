@@ -13,7 +13,7 @@ import Simulator from './pages/Simulator'
 import { LayoutDashboard, Receipt, BarChart3, Mail, Bell, RefreshCw, Network, LogOut, ExternalLink } from 'lucide-react'
 
 const AppContent = () => {
-  const { selectedTab, setSelectedTab, notifications, loading, fetchData, isAuthenticated, logout } = useApp()
+  const { selectedTab, setSelectedTab, notifications, loading, fetchData, isAuthenticated, logout, addNotification } = useApp()
 
   const publicTabs = ['landing', 'pricing', 'login', 'register']
   const isPublicPage = publicTabs.includes(selectedTab)
@@ -22,6 +22,31 @@ const AppContent = () => {
   React.useEffect(() => {
     authRef.current = isAuthenticated
   }, [isAuthenticated])
+
+  // Handle URL email activation response parameters
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const activated = params.get('activated')
+    const activationError = params.get('activation_error')
+
+    if (activated === 'true') {
+      // Clear URL query parameters
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+      
+      // Notify and navigate
+      addNotification("Your account has been successfully activated! Please sign in.", "success")
+      setSelectedTab('login')
+    } else if (activationError) {
+      // Clear URL query parameters
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+      
+      // Notify and navigate
+      addNotification("Invalid or expired activation token. Please try again.", "error")
+      setSelectedTab('register')
+    }
+  }, [addNotification, setSelectedTab])
 
   // Synchronize URL path with selectedTab
   React.useEffect(() => {

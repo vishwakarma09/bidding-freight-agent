@@ -47,10 +47,15 @@ const LoginPage = () => {
     }
   }, [])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (email && password) {
-      login(email, password)
+      try {
+        setError('')
+        await login(email, password)
+      } catch (err) {
+        setError(err.response?.data?.detail || "Invalid email or password")
+      }
     }
   }
 

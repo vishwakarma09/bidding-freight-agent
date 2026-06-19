@@ -30,6 +30,8 @@ export const sendMockEmail = (payload) => api.post('/simulator/send-mock-email',
 export const fastForwardTimers = () => api.post('/simulator/fast-forward').then(res => res.data)
 export const resetSimulatorDatabase = () => api.post('/simulator/reset-database').then(res => res.data)
 export const getSimulatorLogs = () => api.get('/simulator/logs').then(res => res.data)
+export const getMailpitMessages = () => api.get('/simulator/mailpit-messages').then(res => res.data)
+
 
 export const getEmailCredentials = () => api.get('/email-credentials').then(res => res.data)
 export const saveEmailCredentials = (payload) => api.post('/email-credentials', payload).then(res => res.data)
@@ -38,6 +40,8 @@ export const testEmailCredentials = (payload) => api.post('/email-credentials/te
 export const testExistingEmailCredentials = () => api.post('/email-credentials/test-existing').then(res => res.data)
 
 export const googleSSO = (payload) => api.post('/auth/google-sso', payload).then(res => res.data)
+export const register = (payload) => api.post('/auth/register', payload).then(res => res.data)
+export const login = (payload) => api.post('/auth/login', payload).then(res => res.data)
 
 export default api
 

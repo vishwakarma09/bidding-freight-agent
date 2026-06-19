@@ -5,35 +5,57 @@ from typing import List, Optional
 import datetime
 import uuid
 from ..database import get_db
-from ..models import FreightQuote, Customer, CarrierBid, StateTransition
+from ..models import FreightQuote, Customer, CarrierBid, StateTransition, User
 from ..schemas import FreightQuoteResponse, FreightQuoteCreate, QuoteApprovalRequest
 from ..services.workflow import transition_quote
 from ..services.embedding_service import get_embedding
+from .auth import get_current_user
 
 router = APIRouter(prefix="/quotes", tags=["Freight Quotes"])
 
 @router.get("", response_model=List[FreightQuoteResponse])
-def get_quotes(db: Session = Depends(get_db)):
-    return db.query(FreightQuote).order_by(FreightQuote.created_at.desc()).all()
+def get_quotes(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    return db.query(FreightQuote).filter(
+        FreightQuote.user_id == current_user.id
+    ).order_by(FreightQuote.created_at.desc()).all()
 
 
 @router.get("/{quote_id}", response_model=FreightQuoteResponse)
-def get_quote(quote_id: str, db: Session = Depends(get_db)):
-    quote = db.query(FreightQuote).filter(FreightQuote.id == quote_id).first()
+def get_quote(
+    quote_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    quote = db.query(FreightQuote).filter(
+        FreightQuote.id == quote_id,
+        FreightQuote.user_id == current_user.id
+    ).first()
     if not quote:
         raise HTTPException(status_code=404, detail="Freight quote not found")
     return quote
 
 
 @router.post("", response_model=FreightQuoteResponse)
-def create_quote(payload: FreightQuoteCreate, db: Session = Depends(get_db)):
-    # 1. Verify customer exists
-    customer = db.query(Customer).filter(Customer.id == payload.customer_id).first()
+def create_quote(
+    payload: FreightQuoteCreate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # 1. Verify customer exists and belongs to this user
+    customer = db.query(Customer).filter(
+        Customer.id == payload.customer_id,
+        Customer.user_id == current_user.id
+    ).first()
     if not customer:
         raise HTTPException(status_code=400, detail="Invalid Customer ID")
 
     # 2. Generate sequential ID like Q-1001
-    count = db.query(func.count(FreightQuote.id)).scalar() or 0
+    count = db.query(func.count(FreightQuote.id)).filter(
+        FreightQuote.user_id == current_user.id
+    ).scalar() or 0
     quote_id = f"Q-{1000 + count + 1}"
 
     # 3. Compute vector embedding for lane RAG benchmarking
@@ -43,6 +65,7 @@ def create_quote(payload: FreightQuoteCreate, db: Session = Depends(get_db)):
     # 4. Create record
     quote = FreightQuote(
         id=quote_id,
+        user_id=current_user.id,
         customer_id=payload.customer_id,
         status="INTAKE",
         origin=payload.origin,
@@ -57,7 +80,6 @@ def create_quote(payload: FreightQuoteCreate, db: Session = Depends(get_db)):
         created_at=datetime.datetime.utcnow(),
         updated_at=datetime.datetime.utcnow()
     )
-    
     db.add(quote)
     db.commit()
     
@@ -70,8 +92,16 @@ def create_quote(payload: FreightQuoteCreate, db: Session = Depends(get_db)):
 
 
 @router.post("/{quote_id}/approve", response_model=FreightQuoteResponse)
-def approve_quote(quote_id: str, approval: QuoteApprovalRequest, db: Session = Depends(get_db)):
-    quote = db.query(FreightQuote).filter(FreightQuote.id == quote_id).first()
+def approve_quote(
+    quote_id: str,
+    approval: QuoteApprovalRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    quote = db.query(FreightQuote).filter(
+        FreightQuote.id == quote_id,
+        FreightQuote.user_id == current_user.id
+    ).first()
     if not quote:
         raise HTTPException(status_code=404, detail="Freight quote not found")
 
@@ -89,11 +119,20 @@ def approve_quote(quote_id: str, approval: QuoteApprovalRequest, db: Session = D
 
 
 @router.post("/{quote_id}/manual-override", response_model=FreightQuoteResponse)
-def manual_override(quote_id: str, to_status: str = Body(..., embed=True), notes: Optional[str] = Body(None, embed=True), db: Session = Depends(get_db)):
+def manual_override(
+    quote_id: str,
+    to_status: str = Body(..., embed=True),
+    notes: Optional[str] = Body(None, embed=True),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Beta requirement: allows manual override of pipeline stage at any time.
     """
-    quote = db.query(FreightQuote).filter(FreightQuote.id == quote_id).first()
+    quote = db.query(FreightQuote).filter(
+        FreightQuote.id == quote_id,
+        FreightQuote.user_id == current_user.id
+    ).first()
     if not quote:
         raise HTTPException(status_code=404, detail="Freight quote not found")
 
@@ -117,12 +156,19 @@ def manual_override(quote_id: str, to_status: str = Body(..., embed=True), notes
 
 
 @router.get("/{quote_id}/historical-rag")
-def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
+def get_historical_rag(
+    quote_id: str,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Performs a vector similarity search on the pgvector column to find 
     the top 3 closest historical lanes and their pricing.
     """
-    quote = db.query(FreightQuote).filter(FreightQuote.id == quote_id).first()
+    quote = db.query(FreightQuote).filter(
+        FreightQuote.id == quote_id,
+        FreightQuote.user_id == current_user.id
+    ).first()
     if not quote:
         raise HTTPException(status_code=404, detail="Freight quote not found")
 
@@ -131,9 +177,9 @@ def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
 
     try:
         # Perform pgvector cosine distance search
-        # shipment_vector.cosine_distance calculates the cosine distance between vectors (1 - cosine similarity)
         results = db.query(FreightQuote).filter(
             FreightQuote.id != quote_id,
+            FreightQuote.user_id == current_user.id,
             FreightQuote.cost_price > 0
         ).order_by(
             FreightQuote.shipment_vector.cosine_distance(quote.shipment_vector)
@@ -141,7 +187,6 @@ def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
 
         formatted_results = []
         for r in results:
-            # Calculate similarity percentage
             dist = db.scalar(select(r.shipment_vector.cosine_distance(quote.shipment_vector)))
             similarity = round((1.0 - float(dist or 0.0)) * 100.0, 2) if dist is not None else 0.0
             
@@ -162,6 +207,7 @@ def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
         # Fallback if pgvector is not initialized or fails: query by exact match of origin/destination
         fallback_results = db.query(FreightQuote).filter(
             FreightQuote.id != quote_id,
+            FreightQuote.user_id == current_user.id,
             FreightQuote.cost_price > 0,
             (FreightQuote.origin == quote.origin) | (FreightQuote.destination == quote.destination)
         ).limit(3).all()
@@ -175,6 +221,6 @@ def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
             "cost_price": r.cost_price,
             "sell_price": r.sell_price,
             "margin_pct": r.margin_pct,
-            "similarity": 50.0, # default fallback similarity
+            "similarity": 50.0,
             "status": r.status
         } for r in fallback_results]

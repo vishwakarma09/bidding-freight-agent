@@ -57,28 +57,17 @@ const Simulator = () => {
 
   // Fetch outgoing emails caught by Mailpit
   const fetchMailpitEmails = async () => {
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    if (!isLocal) {
-      setMailpitEmails([])
-      setMailpitLoading(false)
-      return
-    }
     setMailpitLoading(true)
     try {
-      try {
-        const res = await axios.get('http://localhost:8025/api/v1/messages')
-        setMailpitEmails(res.data.messages || [])
-      } catch (err) {
-        // Fallback to container port 18025
-        const res = await axios.get('http://localhost:18025/api/v1/messages')
-        setMailpitEmails(res.data.messages || [])
-      }
+      const data = await api.getMailpitMessages()
+      setMailpitEmails(data.messages || [])
     } catch (err) {
-      console.warn("Mailpit API offline or unreachable from client.")
+      console.warn("Mailpit API offline or unreachable from backend proxy.")
     } finally {
       setMailpitLoading(false)
     }
   }
+
 
   // Fetch real-time event logs from backend
   const fetchLogs = async () => {

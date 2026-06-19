@@ -4,12 +4,18 @@ import logging
 from ..database import get_db
 from ..schemas import SimulateEmailRequest
 from ..services.email_service import process_incoming_email
+from ..models import User
+from .auth import get_current_user
 
 router = APIRouter(prefix="/simulator", tags=["Email Simulator"])
 logger = logging.getLogger(__name__)
 
 @router.post("/send-mock-email")
-def send_mock_email(payload: SimulateEmailRequest, db: Session = Depends(get_db)):
+def send_mock_email(
+    payload: SimulateEmailRequest, 
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Simulates receiving an email (either a customer inquiry, a carrier bid, or a customer approval/rejection).
     """
@@ -18,8 +24,8 @@ def send_mock_email(payload: SimulateEmailRequest, db: Session = Depends(get_db)
     from ..services.email_service import send_email
 
     try:
-        # 1. Determine the target recipient based on configured credentials
-        creds = db.query(EmailCredential).first()
+        # 1. Determine the target recipient based on configured credentials of this user
+        creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
         target_recipient = creds.email if (creds and creds.email) else payload.recipient
 
         # 2. Route the email via SMTP first so it gets captured by Mailpit
@@ -69,7 +75,8 @@ def send_mock_email(payload: SimulateEmailRequest, db: Session = Depends(get_db)
             payload.sender, 
             target_recipient, 
             payload.subject, 
-            payload.body
+            payload.body,
+            user_id=current_user.id
         )
     except ValueError as e:
         logger.warning(f"Validation error in mock email simulation: {e}")
@@ -187,5 +194,38 @@ def get_logs(db: Session = Depends(get_db), limit: int = 50):
     # Sort all logs by timestamp desc
     logs.sort(key=lambda x: x["timestamp"], reverse=True)
     return logs[:limit]
+
+
+@router.get("/mailpit-messages")
+def get_mailpit_messages(
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Proxies requests to the Mailpit API to fetch mock emails.
+    Try multiple potential endpoints:
+    1. mailpit:8025 (inside docker container network)
+    2. localhost:18025 (fallback if mapped to 18025 on host)
+    3. localhost:8025 (fallback if running directly on host or host network)
+    4. host.docker.internal:18025 (docker-to-host fallback)
+    """
+    import httpx
+    
+    urls = [
+        "http://mailpit:8025/api/v1/messages",
+        "http://localhost:18025/api/v1/messages",
+        "http://localhost:8025/api/v1/messages",
+        "http://host.docker.internal:18025/api/v1/messages"
+    ]
+    
+    for url in urls:
+        try:
+            r = httpx.get(url, timeout=2.0)
+            if r.status_code == 200:
+                return r.json()
+        except Exception as e:
+            logger.debug(f"Failed to fetch mailpit from {url}: {e}")
+            
+    return {"messages": []}
+
 
 

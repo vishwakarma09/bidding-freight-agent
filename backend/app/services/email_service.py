@@ -50,7 +50,7 @@ def send_email(to_email: str, subject: str, body_html: str, from_email: str = No
         return False
 
 
-def process_incoming_email(db: Session, sender: str, recipient: str, subject: str, body: str) -> dict:
+def process_incoming_email(db: Session, sender: str, recipient: str, subject: str, body: str, user_id: int = None) -> dict:
     sender = sender.strip()
     recipient = recipient.strip()
     subject = subject.strip()
@@ -60,7 +60,10 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
     quote_id_match = re.search(r'(Q-\d{4})', f"{subject} {body}")
     if quote_id_match:
         quote_id = quote_id_match.group(1)
-        quote = db.query(FreightQuote).filter(FreightQuote.id == quote_id).first()
+        quote_query = db.query(FreightQuote).filter(FreightQuote.id == quote_id)
+        if user_id:
+            quote_query = quote_query.filter(FreightQuote.user_id == user_id)
+        quote = quote_query.first()
         if quote:
             # Clean the sender email
             sender_email_match = re.findall(r'[\w\.-]+@[\w\.-]+', sender)
@@ -95,12 +98,16 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
                         }
 
             # If not a customer reply, treat it as a carrier bid
-            carrier = db.query(Carrier).filter(Carrier.email == sender_clean).first()
+            carrier_query = db.query(Carrier).filter(Carrier.email == sender_clean)
+            if user_id:
+                carrier_query = carrier_query.filter(Carrier.user_id == user_id)
+            carrier = carrier_query.first()
             if not carrier:
                 # Seed a carrier if not found
                 carrier = Carrier(
                     name=sender_clean.split('@')[0].replace('carrier_', '').replace('.', ' ').title(),
                     email=sender_clean,
+                    user_id=user_id,
                     competitiveness_score=0.0
                 )
                 db.add(carrier)
@@ -290,7 +297,7 @@ def poll_and_ingest_emails(db: Session):
                         
                         try:
                             logger.info(f"Ingesting Mailpit email {msg_id} from {sender} with subject {subject}")
-                            process_incoming_email(db, sender, creds.email, subject, body)
+                            process_incoming_email(db, sender, creds.email, subject, body, user_id=creds.user_id)
                         except Exception as e:
                             logger.error(f"Error processing email {msg_id}: {e}")
                         
@@ -377,7 +384,7 @@ def poll_real_imap_for_creds(db: Session, creds: EmailCredential):
                         
                     try:
                         logger.info(f"Ingesting real IMAP email {message_id} from {sender} with subject {subject}")
-                        process_incoming_email(db, sender, creds.email, subject, body)
+                        process_incoming_email(db, sender, creds.email, subject, body, user_id=creds.user_id)
                     except Exception as e:
                         logger.error(f"Error processing real IMAP email {message_id}: {e}")
                         

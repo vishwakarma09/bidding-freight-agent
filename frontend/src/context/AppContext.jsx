@@ -165,15 +165,37 @@ export const AppProvider = ({ children }) => {
   }
 
 
-  const login = (email, password) => {
-    localStorage.setItem('userEmail', email)
-    setIsAuthenticated(true)
-    setUser({ email, name: email.split('@')[0] })
-    if (api.default && api.default.defaults) {
-      api.default.defaults.headers.common['X-User-Email'] = email
+  const login = async (email, password) => {
+    try {
+      const response = await api.login({ email, password })
+      const { user } = response
+      localStorage.setItem('userEmail', user.email)
+      setIsAuthenticated(true)
+      setUser(user)
+      if (api.default && api.default.defaults) {
+        api.default.defaults.headers.common['X-User-Email'] = user.email
+      }
+      addNotification("Logged in successfully! Welcome back.", "success")
+      setSelectedTab('dashboard')
+    } catch (err) {
+      console.error("Login failed:", err)
+      const errorMsg = err.response?.data?.detail || "Invalid email or password"
+      addNotification(errorMsg, "error")
+      throw err
     }
-    addNotification("Logged in successfully! Welcome back.", "success")
-    setSelectedTab('dashboard')
+  }
+
+  const register = async (name, email, password) => {
+    try {
+      const response = await api.register({ name, email, password })
+      addNotification(response.message || "Registration successful! Please check your email to activate.", "success")
+      return response
+    } catch (err) {
+      console.error("Registration failed:", err)
+      const errorMsg = err.response?.data?.detail || "Registration failed"
+      addNotification(errorMsg, "error")
+      throw err
+    }
   }
 
   const loginWithGoogle = async (credentialToken) => {
@@ -262,6 +284,7 @@ export const AppProvider = ({ children }) => {
 
       user,
       login,
+      register,
       loginWithGoogle,
       logout,
       handleSaveCarrier,

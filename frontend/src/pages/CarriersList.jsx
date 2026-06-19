@@ -36,17 +36,17 @@ const CarriersList = () => {
   useEffect(() => {
     getEmailCredentials()
       .then(data => {
-        setEmailCreds(data)
-        if (data) {
-          setUseDevMode(data.use_dev_mode || false)
+        if (Array.isArray(data) && data.length > 0) {
+          const cred = data[0]
+          setEmailCreds(cred)
+          setUseDevMode(cred.use_dev_mode || false)
+        } else {
+          setEmailCreds(null)
+          setUseDevMode(false)
         }
       })
       .catch(err => {
-        if (err.response && err.response.status === 404) {
-          setEmailCreds(null)
-        } else {
-          console.error("Failed to load email credentials:", err)
-        }
+        console.error("Failed to load email credentials:", err)
       })
   }, [])
 

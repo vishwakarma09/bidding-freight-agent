@@ -4,17 +4,23 @@ from sqlalchemy import func, select, and_
 from typing import List, Dict, Any
 import datetime
 from ..database import get_db
-from ..models import FreightQuote, Customer, Carrier, CarrierBid, StateTransition
+from ..models import FreightQuote, Customer, Carrier, CarrierBid, StateTransition, User
+from .auth import get_current_user
 
 router = APIRouter(prefix="/analytics", tags=["Analytics"])
 
 @router.get("")
-def get_analytics(db: Session = Depends(get_db)):
+def get_analytics(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
     """
     Computes key performance metrics for the freight pipeline.
     """
     # 1. Total Quotes count by status
-    status_counts = db.query(FreightQuote.status, func.count(FreightQuote.id)).group_by(FreightQuote.status).all()
+    status_counts = db.query(FreightQuote.status, func.count(FreightQuote.id)).filter(
+        FreightQuote.user_id == current_user.id
+    ).group_by(FreightQuote.status).all()
     status_counts_dict = {status: count for status, count in status_counts}
 
     # 2. Financial Metrics (Approved / In Transit / Completed)
@@ -24,7 +30,10 @@ def get_analytics(db: Session = Depends(get_db)):
         func.sum(FreightQuote.cost_price).label("payables"),
         func.sum(FreightQuote.margin_amt).label("margin_amt"),
         func.avg(FreightQuote.margin_pct).label("avg_margin_pct")
-    ).filter(FreightQuote.status.in_(financial_states)).first()
+    ).filter(
+        FreightQuote.status.in_(financial_states),
+        FreightQuote.user_id == current_user.id
+    ).first()
 
     total_receivables = round(float(finance_summary.receivables or 0.0), 2)
     total_payables = round(float(finance_summary.payables or 0.0), 2)
@@ -33,24 +42,25 @@ def get_analytics(db: Session = Depends(get_db)):
 
     # 3. Quote to Approval Conversion %
     total_proposals = db.query(func.count(FreightQuote.id)).filter(
-        FreightQuote.status.in_(["AWAITING_APPROVAL", "APPROVED", "IN_TRANSIT", "COMPLETED", "LOST"])
+        FreightQuote.status.in_(["AWAITING_APPROVAL", "APPROVED", "IN_TRANSIT", "COMPLETED", "LOST"]),
+        FreightQuote.user_id == current_user.id
     ).scalar() or 0
     
     total_approved = db.query(func.count(FreightQuote.id)).filter(
-        FreightQuote.status.in_(financial_states)
+        FreightQuote.status.in_(financial_states),
+        FreightQuote.user_id == current_user.id
     ).scalar() or 0
     
     conversion_pct = round((total_approved / total_proposals * 100.0), 2) if total_proposals > 0 else 0.0
 
     # 4. Average Response / Turnaround Time (Intake to Customer Quote Sent)
-    # We matches state transition logs for this quote
-    transitions = db.query(StateTransition).filter(
-        StateTransition.to_status == "AWAITING_APPROVAL"
+    transitions = db.query(StateTransition).join(FreightQuote).filter(
+        StateTransition.to_status == "AWAITING_APPROVAL",
+        FreightQuote.user_id == current_user.id
     ).all()
     
     durations = []
     for t in transitions:
-        # Get matching Intake timestamp
         intake_t = db.query(StateTransition).filter(
             StateTransition.freight_quote_id == t.freight_quote_id,
             StateTransition.to_status == "OUT_TO_CARRIERS"
@@ -67,7 +77,7 @@ def get_analytics(db: Session = Depends(get_db)):
         avg_turnaround_str = f"{minutes}m {seconds}s"
 
     # 5. Win Rate & Competitiveness by Carrier
-    carriers = db.query(Carrier).all()
+    carriers = db.query(Carrier).filter(Carrier.user_id == current_user.id).all()
     carrier_stats = []
     for carrier in carriers:
         total_bids = db.query(func.count(CarrierBid.id)).filter(
@@ -76,12 +86,12 @@ def get_analytics(db: Session = Depends(get_db)):
 
         wins = db.query(func.count(FreightQuote.id)).filter(
             FreightQuote.winning_carrier_id == carrier.id,
-            FreightQuote.status.in_(financial_states)
+            FreightQuote.status.in_(financial_states),
+            FreightQuote.user_id == current_user.id
         ).scalar() or 0
 
         win_rate_pct = round((wins / total_bids * 100.0), 2) if total_bids > 0 else 0.0
 
-        # Update carrier competitiveness score in DB
         if carrier.is_override:
             carrier.competitiveness_score = carrier.simulated_score
             effective_win_rate = carrier.simulated_score * 10.0
@@ -91,7 +101,6 @@ def get_analytics(db: Session = Depends(get_db)):
             
         db.commit()
 
-        # Calculate avg_bid for the response
         avg_bid = db.query(func.avg(CarrierBid.bid_amount)).filter(
             CarrierBid.carrier_id == carrier.id
         ).scalar() or 0.0
@@ -107,16 +116,18 @@ def get_analytics(db: Session = Depends(get_db)):
         })
 
     # 6. Win Rate by Customer
-    customers = db.query(Customer).all()
+    customers = db.query(Customer).filter(Customer.user_id == current_user.id).all()
     customer_stats = []
     for customer in customers:
         total_quotes = db.query(func.count(FreightQuote.id)).filter(
-            FreightQuote.customer_id == customer.id
+            FreightQuote.customer_id == customer.id,
+            FreightQuote.user_id == current_user.id
         ).scalar() or 0
 
         wins = db.query(func.count(FreightQuote.id)).filter(
             FreightQuote.customer_id == customer.id,
-            FreightQuote.status.in_(financial_states)
+            FreightQuote.status.in_(financial_states),
+            FreightQuote.user_id == current_user.id
         ).scalar() or 0
 
         conv_pct = round((wins / total_quotes * 100.0), 2) if total_quotes > 0 else 0.0

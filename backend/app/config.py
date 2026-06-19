@@ -3,6 +3,7 @@ from typing import Optional
 
 class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql://freight_user:freight_password@localhost:5432/freight_bidding_db"
+    FRONTEND_URL: str = "http://localhost:5173"
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     SMTP_HOST: str = "localhost"

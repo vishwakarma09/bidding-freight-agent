@@ -1,12 +1,14 @@
 import smtplib
 import imaplib
 import logging
-from fastapi import APIRouter, Depends, HTTPException, Header
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 from ..database import get_db
-from ..models import EmailCredential
+from ..models import EmailCredential, User
 from ..schemas import EmailCredentialCreate, EmailCredentialResponse
 from ..security_utils import encrypt_password, decrypt_password
+from .auth import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/email-credentials", tags=["Email Credentials"])
@@ -14,7 +16,6 @@ router = APIRouter(prefix="/email-credentials", tags=["Email Credentials"])
 def clean_str(val: str) -> str:
     if not val:
         return ""
-    # Strip normal spaces, non-breaking spaces (\xa0), tabs, newlines
     return val.strip().replace(" ", "").replace("\xa0", "").replace("\t", "").replace("\n", "").replace("\r", "")
 
 def check_mailpit_service():
@@ -61,23 +62,21 @@ def check_imap(host: str, port: int, email: str, password: str):
         logger.error(f"IMAP verification failed: {e}")
         return False, str(e)
 
-@router.get("", response_model=EmailCredentialResponse)
+@router.get("", response_model=List[EmailCredentialResponse])
 def get_credentials(
-    x_user_email: str = Header(..., alias="X-User-Email"), 
+    current_user: User = Depends(get_current_user), 
     db: Session = Depends(get_db)
 ):
-    creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
-    if not creds:
-        raise HTTPException(status_code=404, detail="Email credentials not configured")
+    creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).all()
     return creds
 
 @router.post("", response_model=EmailCredentialResponse)
 def save_credentials(
     payload: EmailCredentialCreate,
-    x_user_email: str = Header(..., alias="X-User-Email"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
+    creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
     if creds:
         creds.email_provider = payload.email_provider
         creds.email = clean_str(payload.email)
@@ -90,12 +89,14 @@ def save_credentials(
         if payload.imap_password != "••••••••••••":
             creds.encrypted_imap_password = encrypt_password(clean_str(payload.imap_password))
         creds.use_dev_mode = payload.use_dev_mode
+        creds.user_email = current_user.email
     else:
         smtp_pwd = clean_str(payload.smtp_password) if payload.smtp_password != "••••••••••••" else ""
         imap_pwd = clean_str(payload.imap_password) if payload.imap_password != "••••••••••••" else ""
         
         creds = EmailCredential(
-            user_email=x_user_email,
+            user_id=current_user.id,
+            user_email=current_user.email,
             email_provider=payload.email_provider,
             email=clean_str(payload.email),
             smtp_host=clean_str(payload.smtp_host),
@@ -114,10 +115,10 @@ def save_credentials(
 
 @router.delete("")
 def delete_credentials(
-    x_user_email: str = Header(..., alias="X-User-Email"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
+    creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
     if not creds:
         raise HTTPException(status_code=404, detail="Email credentials not found")
     
@@ -128,7 +129,7 @@ def delete_credentials(
 @router.post("/test")
 def test_credentials(
     payload: EmailCredentialCreate,
-    x_user_email: str = Header(..., alias="X-User-Email"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
     if payload.use_dev_mode:
@@ -141,7 +142,7 @@ def test_credentials(
             "success": mailpit_ok
         }
 
-    existing = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
+    existing = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
     
     smtp_password = payload.smtp_password
     if smtp_password == "••••••••••••" or not smtp_password:
@@ -181,10 +182,10 @@ def test_credentials(
 
 @router.post("/test-existing")
 def test_existing_credentials(
-    x_user_email: str = Header(..., alias="X-User-Email"),
+    current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    creds = db.query(EmailCredential).filter(EmailCredential.user_email == x_user_email).first()
+    creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
     if not creds:
         raise HTTPException(status_code=404, detail="Email credentials not found")
         

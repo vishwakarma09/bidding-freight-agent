@@ -8,6 +8,7 @@ class Customer(Base):
     __tablename__ = "customers"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     default_markup_percent = Column(Float, default=10.0)
@@ -21,8 +22,9 @@ class Carrier(Base):
     __tablename__ = "carriers"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
+    email = Column(String, index=True, nullable=False)
     competitiveness_score = Column(Float, default=0.0) # calculated based on historical wins
     is_override = Column(Boolean, default=False, nullable=False)
     simulated_score = Column(Float, default=0.0, nullable=False)
@@ -37,6 +39,7 @@ class FreightQuote(Base):
     __tablename__ = "freight_quotes"
 
     id = Column(String, primary_key=True, index=True) # e.g. "Q-1001"
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=False)
     status = Column(String, default="INTAKE", nullable=False)
     
@@ -129,6 +132,7 @@ class EmailCredential(Base):
     __tablename__ = "email_credentials"
 
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), unique=True, index=True, nullable=True)
     user_email = Column(String(100), unique=True, index=True, nullable=False)
     email_provider = Column(String(50), nullable=False, default="Gmail")
     email = Column(String(100), nullable=False)
@@ -164,4 +168,18 @@ class RequestForQuote(Base):
 
     quote = relationship("FreightQuote", back_populates="rfqs")
     carrier = relationship("Carrier")
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=True)  # Nullable for Google SSO users
+    is_active = Column(Boolean, default=False, nullable=False)
+    activation_token = Column(String, unique=True, index=True, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
 

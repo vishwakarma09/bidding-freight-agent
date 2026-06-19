@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from .database import engine, Base, SessionLocal
-from .models import Customer, Carrier, EmailCredential
+from .models import Customer, Carrier, EmailCredential, User
 from .routes import quotes, carriers, customers, simulator, analytics, email_credentials, auth
 from .services.workflow import check_pending_timers
 
@@ -92,15 +92,82 @@ def startup_event():
         db.commit()
     except Exception as e:
         logger.warning(f"Could not alter carriers table: {e}")
-        
-    # 2. Seed default Customers and Carriers if tables are empty
+
     try:
+        logger.info("Altering tables to add user_id column if not exists...")
+        db.execute(text("ALTER TABLE carriers ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"))
+        db.execute(text("ALTER TABLE freight_quotes ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"))
+        db.execute(text("ALTER TABLE customers ADD COLUMN IF NOT EXISTS user_id INTEGER REFERENCES users(id) ON DELETE CASCADE"))
+        db.execute(text("ALTER TABLE email_credentials ADD COLUMN IF NOT EXISTS user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE"))
+        
+        # Drop unique constraint on carriers(email)
+        # Note: postgres unique index constraint name is carriers_email_key
+        db.execute(text("ALTER TABLE carriers DROP CONSTRAINT IF EXISTS carriers_email_key"))
+        
+        # Drop unique index if exists in postgres and create a non-unique one
+        db.execute(text("DROP INDEX IF EXISTS ix_carriers_email"))
+        db.execute(text("CREATE INDEX IF NOT EXISTS ix_carriers_email ON carriers (email)"))
+        db.commit()
+    except Exception as e:
+        logger.warning(f"Could not alter tables for user_id columns or constraints: {e}")
+        db.rollback()
+
+    try:
+        logger.info("Healing database: linking user_id to existing credentials and data...")
+        # 1. Update email_credentials based on user_email
+        db.execute(text("""
+            UPDATE email_credentials ec 
+            SET user_id = u.id 
+            FROM users u 
+            WHERE ec.user_email = u.email AND ec.user_id IS NULL
+        """))
+        
+        # 2. Update carriers, customers, freight_quotes to default seeded user
+        db.execute(text("""
+            UPDATE carriers 
+            SET user_id = (SELECT id FROM users WHERE email = 'broker@dispatch.owera.ca' LIMIT 1) 
+            WHERE user_id IS NULL
+        """))
+        db.execute(text("""
+            UPDATE customers 
+            SET user_id = (SELECT id FROM users WHERE email = 'broker@dispatch.owera.ca' LIMIT 1) 
+            WHERE user_id IS NULL
+        """))
+        db.execute(text("""
+            UPDATE freight_quotes 
+            SET user_id = (SELECT id FROM users WHERE email = 'broker@dispatch.owera.ca' LIMIT 1) 
+            WHERE user_id IS NULL
+        """))
+        db.commit()
+        logger.info("Database healing completed successfully.")
+    except Exception as e:
+        logger.warning(f"Could not heal database: {e}")
+        db.rollback()
+        
+    # 2. Seed default User, Customers, Carriers, and Credentials if tables are empty
+    try:
+        # Seed default User first
+        if db.query(User).count() == 0:
+            logger.info("Seeding default User broker@dispatch.owera.ca...")
+            from .security_utils import hash_password
+            default_user = User(
+                email="broker@dispatch.owera.ca",
+                name="Broker",
+                hashed_password=hash_password("password123"),
+                is_active=True
+            )
+            db.add(default_user)
+            db.commit()
+            
+        default_user = db.query(User).filter(User.email == "broker@dispatch.owera.ca").first()
+        default_user_id = default_user.id if default_user else None
+
         if db.query(Customer).count() == 0:
             logger.info("Seeding default Customers A, B, and C...")
             customers = [
-                Customer(name="Dispatch Customer A (5% Markup)", email="customer_a@example.com", default_markup_percent=5.0),
-                Customer(name="Dispatch Customer B (12% Markup)", email="customer_b@example.com", default_markup_percent=12.0),
-                Customer(name="Dispatch Customer C (30% Markup)", email="customer_c@example.com", default_markup_percent=30.0)
+                Customer(name="Dispatch Customer A (5% Markup)", email="customer_a@example.com", default_markup_percent=5.0, user_id=default_user_id),
+                Customer(name="Dispatch Customer B (12% Markup)", email="customer_b@example.com", default_markup_percent=12.0, user_id=default_user_id),
+                Customer(name="Dispatch Customer C (30% Markup)", email="customer_c@example.com", default_markup_percent=30.0, user_id=default_user_id)
             ]
             db.add_all(customers)
             db.commit()
@@ -108,11 +175,11 @@ def startup_event():
         if db.query(Carrier).count() == 0:
             logger.info("Seeding default carriers UPS, FedEx, DHL, Amazon Freight, and Old Dominion...")
             carriers = [
-                Carrier(name="UPS Freight", email="carrier_ups@mailpit.local", competitiveness_score=0.0),
-                Carrier(name="FedEx Freight", email="carrier_fedex@mailpit.local", competitiveness_score=0.0),
-                Carrier(name="DHL Express", email="carrier_dhl@mailpit.local", competitiveness_score=0.0),
-                Carrier(name="Amazon Freight", email="carrier_amz@mailpit.local", competitiveness_score=0.0),
-                Carrier(name="Old Dominion", email="carrier_od@mailpit.local", competitiveness_score=0.0)
+                Carrier(name="UPS Freight", email="carrier_ups@mailpit.local", competitiveness_score=0.0, user_id=default_user_id),
+                Carrier(name="FedEx Freight", email="carrier_fedex@mailpit.local", competitiveness_score=0.0, user_id=default_user_id),
+                Carrier(name="DHL Express", email="carrier_dhl@mailpit.local", competitiveness_score=0.0, user_id=default_user_id),
+                Carrier(name="Amazon Freight", email="carrier_amz@mailpit.local", competitiveness_score=0.0, user_id=default_user_id),
+                Carrier(name="Old Dominion", email="carrier_od@mailpit.local", competitiveness_score=0.0, user_id=default_user_id)
             ]
             db.add_all(carriers)
             db.commit()
@@ -121,6 +188,7 @@ def startup_event():
             logger.info("Seeding default EmailCredential for Mailpit...")
             from .security_utils import encrypt_password
             default_creds = EmailCredential(
+                user_id=default_user_id,
                 user_email="broker@dispatch.owera.ca",
                 email_provider="Mailpit",
                 email="broker@dispatch.owera.ca",
