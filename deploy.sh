@@ -8,7 +8,8 @@ echo "======================================"
 APP_DIR="/var/www/html/dispatch.owera.ca"
 FRONTEND_APP="dispatch-frontend"
 BACKEND_APP="dispatch-backend"
-ECOSYSTEM_CONFIG="/var/www/html/skillpiv.com/docs/ecosystem.config.cjs"
+ECOSYSTEM_CONFIG="$APP_DIR/docs/ecosystem.config.cjs"
+
 
 # -------------------------------------------------------
 # Load NVM / Node environment (for non-interactive shells)
