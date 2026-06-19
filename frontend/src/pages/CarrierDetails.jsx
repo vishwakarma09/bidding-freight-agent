@@ -5,6 +5,8 @@ import { ArrowLeft, Save, Users, Mail, Award } from 'lucide-react'
 const CarrierDetails = () => {
   const { carriers, editingCarrierId, setEditingCarrierId, setSelectedTab, handleSaveCarrier } = useApp()
 
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
   const [isOverride, setIsOverride] = useState(false)
   const [simulatedScore, setSimulatedScore] = useState(5.0)
   const [calculatedScore, setCalculatedScore] = useState(0.0)
@@ -26,7 +28,8 @@ const CarrierDetails = () => {
       setSimulatedScore(5.0)
       setCalculatedScore(0.0)
     }
-  }, [editingCarrierId, carriers])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingCarrierId])
 
   const handleCancel = () => {
     setEditingCarrierId(null)

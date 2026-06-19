@@ -126,7 +126,7 @@ def get_historical_rag(quote_id: str, db: Session = Depends(get_db)):
     if not quote:
         raise HTTPException(status_code=404, detail="Freight quote not found")
 
-    if not quote.shipment_vector:
+    if quote.shipment_vector is None:
         return []
 
     try:

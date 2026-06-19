@@ -29,7 +29,7 @@ class Carrier(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-    bids = relationship("CarrierBid", back_populates="carrier")
+    bids = relationship("CarrierBid", back_populates="carrier", cascade="all, delete-orphan")
     quotes_won = relationship("FreightQuote", back_populates="winning_carrier")
 
 
@@ -63,7 +63,7 @@ class FreightQuote(Base):
     margin_pct = Column(Float, default=0.0)
     
     # Winner & Resolution
-    winning_carrier_id = Column(Integer, ForeignKey("carriers.id"), nullable=True)
+    winning_carrier_id = Column(Integer, ForeignKey("carriers.id", ondelete="SET NULL"), nullable=True)
     lost_reason = Column(String, nullable=True)
     competitor_info = Column(String, nullable=True)
     
@@ -95,7 +95,7 @@ class CarrierBid(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     freight_quote_id = Column(String, ForeignKey("freight_quotes.id"), nullable=False)
-    carrier_id = Column(Integer, ForeignKey("carriers.id"), nullable=False)
+    carrier_id = Column(Integer, ForeignKey("carriers.id", ondelete="CASCADE"), nullable=False)
     round = Column(Integer, default=1) # 1 or 2
     bid_amount = Column(Float, nullable=False)
     transit_time_days = Column(Integer, nullable=True)

@@ -174,12 +174,6 @@ const CarriersList = () => {
           <h2 className="text-2xl font-bold text-on-surface">Carriers Hub</h2>
           <p className="text-sm text-on-surface-variant mt-1">Configure automated communication and manage carriers for bidding.</p>
         </div>
-        <button
-          onClick={handleAdd}
-          className="px-5 py-2.5 rounded-xl bg-primary text-on-primary font-bold text-sm hover:brightness-110 active:scale-95 transition-all neon-glow-primary flex items-center gap-2"
-        >
-          <Plus size={16} /> Add Carrier
-        </button>
       </div>
 
       {/* KPI Stats Bento Row */}
@@ -312,7 +306,15 @@ const CarriersList = () => {
       <div className="glass-card rounded-2xl overflow-hidden border border-white/5 bg-surface-container-low/20 backdrop-blur-md">
         <div className="p-6 border-b border-white/5 bg-white/2 flex justify-between items-center">
           <h3 className="font-bold text-on-surface text-base">Bidding Carrier Network</h3>
-          <span className="text-xs text-on-surface-variant/60 font-semibold uppercase tracking-wider">DATABASE-SYNCHRONIZED CARRIERS</span>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-on-surface-variant/60 font-semibold uppercase tracking-wider">DATABASE-SYNCHRONIZED CARRIERS</span>
+            <button
+              onClick={handleAdd}
+              className="px-3.5 py-1.5 rounded-lg bg-primary text-on-primary font-bold text-xs hover:brightness-110 active:scale-95 transition-all neon-glow-primary flex items-center gap-1.5"
+            >
+              <Plus size={14} /> Add Carrier
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
