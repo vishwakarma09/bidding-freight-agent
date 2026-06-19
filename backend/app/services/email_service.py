@@ -177,9 +177,14 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
             customer = Customer(
                 name=sender_clean.split('@')[0].replace('.', ' ').title(),
                 email=sender_clean,
+                user_id=user_id,
                 default_markup_percent=12.0 # default simulator markup
             )
             db.add(customer)
+            db.commit()
+            db.refresh(customer)
+        elif customer.user_id is None and user_id is not None:
+            customer.user_id = user_id
             db.commit()
             db.refresh(customer)
 
@@ -188,7 +193,12 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
 
         # Generate quote sequential ID
         count = db.query(func.count(FreightQuote.id)).scalar() or 0
-        quote_id = f"Q-{1000 + count + 1}"
+        while True:
+            quote_id = f"Q-{1000 + count + 1}"
+            exists = db.query(FreightQuote.id).filter(FreightQuote.id == quote_id).first()
+            if not exists:
+                break
+            count += 1
 
         # Generate semantic vector
         description = f"Origin: {extracted['origin']}, Destination: {extracted['destination']}, Class: {extracted['freight_class']}, Weight: {extracted['weight_lbs']} lbs"
@@ -197,6 +207,7 @@ def process_incoming_email(db: Session, sender: str, recipient: str, subject: st
         # Create Freight Quote
         quote = FreightQuote(
             id=quote_id,
+            user_id=user_id,
             customer_id=customer.id,
             status="INTAKE",
             origin=extracted["origin"],

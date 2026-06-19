@@ -53,10 +53,13 @@ def create_quote(
         raise HTTPException(status_code=400, detail="Invalid Customer ID")
 
     # 2. Generate sequential ID like Q-1001
-    count = db.query(func.count(FreightQuote.id)).filter(
-        FreightQuote.user_id == current_user.id
-    ).scalar() or 0
-    quote_id = f"Q-{1000 + count + 1}"
+    count = db.query(func.count(FreightQuote.id)).scalar() or 0
+    while True:
+        quote_id = f"Q-{1000 + count + 1}"
+        exists = db.query(FreightQuote.id).filter(FreightQuote.id == quote_id).first()
+        if not exists:
+            break
+        count += 1
 
     # 3. Compute vector embedding for lane RAG benchmarking
     description = f"Origin: {payload.origin}, Destination: {payload.destination}, Class: {payload.freight_class or 'N/A'}, Weight: {payload.weight_lbs} lbs"
