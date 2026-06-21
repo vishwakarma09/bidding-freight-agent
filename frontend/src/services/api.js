@@ -34,6 +34,7 @@ export const getMailpitMessages = () => api.get('/simulator/mailpit-messages').t
 
 
 export const getEmailCredentials = () => api.get('/email-credentials').then(res => res.data)
+export const getEmailEnv = () => api.get('/email-credentials/env').then(res => res.data)
 export const saveEmailCredentials = (payload) => api.post('/email-credentials', payload).then(res => res.data)
 export const deleteEmailCredentials = () => api.delete('/email-credentials').then(res => res.data)
 export const testEmailCredentials = (payload) => api.post('/email-credentials/test', payload).then(res => res.data)

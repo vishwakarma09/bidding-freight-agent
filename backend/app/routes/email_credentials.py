@@ -70,12 +70,21 @@ def get_credentials(
     creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).all()
     return creds
 
+@router.get("/env")
+def get_env_mode(
+    current_user: User = Depends(get_current_user)
+):
+    from ..config import settings
+    return {"env": settings.ENV}
+
 @router.post("", response_model=EmailCredentialResponse)
 def save_credentials(
     payload: EmailCredentialCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    from ..config import settings
+    effective_use_dev_mode = payload.use_dev_mode if settings.ENV != "prod" else False
     creds = db.query(EmailCredential).filter(EmailCredential.user_id == current_user.id).first()
     if creds:
         creds.email_provider = payload.email_provider
@@ -88,7 +97,7 @@ def save_credentials(
         creds.imap_port = payload.imap_port
         if payload.imap_password != "••••••••••••":
             creds.encrypted_imap_password = encrypt_password(clean_str(payload.imap_password))
-        creds.use_dev_mode = payload.use_dev_mode
+        creds.use_dev_mode = effective_use_dev_mode
         creds.user_email = current_user.email
     else:
         smtp_pwd = clean_str(payload.smtp_password) if payload.smtp_password != "••••••••••••" else ""
@@ -105,7 +114,7 @@ def save_credentials(
             imap_host=clean_str(payload.imap_host),
             imap_port=payload.imap_port,
             encrypted_imap_password=encrypt_password(imap_pwd),
-            use_dev_mode=payload.use_dev_mode
+            use_dev_mode=effective_use_dev_mode
         )
         db.add(creds)
     
@@ -132,7 +141,9 @@ def test_credentials(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    if payload.use_dev_mode:
+    from ..config import settings
+    effective_use_dev_mode = payload.use_dev_mode if settings.ENV != "prod" else False
+    if effective_use_dev_mode:
         mailpit_ok = check_mailpit_service()
         return {
             "smtp_connected": mailpit_ok,
@@ -189,7 +200,8 @@ def test_existing_credentials(
     if not creds:
         raise HTTPException(status_code=404, detail="Email credentials not found")
         
-    if creds.use_dev_mode:
+    from ..config import settings
+    if creds.use_dev_mode and settings.ENV != "prod":
         mailpit_ok = check_mailpit_service()
         return {
             "smtp_connected": mailpit_ok,

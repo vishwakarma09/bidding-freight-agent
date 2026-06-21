@@ -253,7 +253,7 @@ def poll_and_ingest_emails(db: Session):
         # Fetch all credentials
         creds_list = db.query(EmailCredential).all()
         for creds in creds_list:
-            if creds.use_dev_mode:
+            if creds.use_dev_mode and settings.ENV != "prod":
                 try:
                     # Poll Mailpit REST API
                     mailpit_host = settings.SMTP_HOST

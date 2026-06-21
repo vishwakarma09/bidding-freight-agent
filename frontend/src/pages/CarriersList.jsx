@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useApp } from '../context/AppContext'
 import { 
   getEmailCredentials, 
+  getEmailEnv,
   saveEmailCredentials, 
   deleteEmailCredentials, 
   testEmailCredentials, 
@@ -31,22 +32,25 @@ const CarriersList = () => {
   const [testingEmail, setTestingEmail] = useState(false)
   const [testResult, setTestResult] = useState(null)
   const [useDevMode, setUseDevMode] = useState(false)
+  const [isProd, setIsProd] = useState(false)
 
-  // Load email credentials from backend on mount
+  // Load email credentials and environment from backend on mount
   useEffect(() => {
-    getEmailCredentials()
-      .then(data => {
-        if (Array.isArray(data) && data.length > 0) {
-          const cred = data[0]
+    Promise.all([getEmailCredentials(), getEmailEnv()])
+      .then(([credsData, envData]) => {
+        const prod = envData?.env === 'prod'
+        setIsProd(prod)
+        if (Array.isArray(credsData) && credsData.length > 0) {
+          const cred = credsData[0]
           setEmailCreds(cred)
-          setUseDevMode(cred.use_dev_mode || false)
+          setUseDevMode(prod ? false : (cred.use_dev_mode || false))
         } else {
           setEmailCreds(null)
           setUseDevMode(false)
         }
       })
       .catch(err => {
-        console.error("Failed to load email credentials:", err)
+        console.error("Failed to load setup data:", err)
       })
   }, [])
 
@@ -266,7 +270,7 @@ const CarriersList = () => {
                   setImapHost(emailCreds.imap_host)
                   setImapPort(emailCreds.imap_port)
                   setImapPassword("••••••••••••")
-                  setUseDevMode(emailCreds.use_dev_mode || false)
+                  setUseDevMode(isProd ? false : (emailCreds.use_dev_mode || false))
                   setShowEmailModal(true)
                 }}
                 className="text-xs font-bold px-4 py-2 bg-white/5 hover:bg-white/10 text-on-surface rounded-lg border border-white/10 flex items-center gap-1.5 transition-colors"
@@ -445,28 +449,30 @@ const CarriersList = () => {
 
             <form onSubmit={handleSaveEmailCreds} className="flex flex-col gap-5">
               {/* Dev Mode Toggle */}
-              <div className="flex items-center justify-between p-3.5 rounded-xl border border-primary/20 bg-primary/5">
-                <div>
-                  <label className="text-xs font-bold text-on-surface flex items-center gap-1.5 cursor-pointer">
-                    <Database size={14} className="text-primary" /> Enable Dev Mode (Use Mailpit)
-                  </label>
-                  <p className="text-[10px] text-on-surface-variant mt-0.5">Routes ingestion to the local mock SMTP / REST container.</p>
+              {!isProd && (
+                <div className="flex items-center justify-between p-3.5 rounded-xl border border-primary/20 bg-primary/5">
+                  <div>
+                    <label className="text-xs font-bold text-on-surface flex items-center gap-1.5 cursor-pointer">
+                      <Database size={14} className="text-primary" /> Enable Dev Mode (Use Mailpit)
+                    </label>
+                    <p className="text-[10px] text-on-surface-variant mt-0.5">Routes ingestion to the local mock SMTP / REST container.</p>
+                  </div>
+                  <input 
+                    type="checkbox"
+                    checked={useDevMode}
+                    onChange={(e) => {
+                      const checked = e.target.checked
+                      setUseDevMode(checked)
+                      if (checked) {
+                        setEmailProvider("Mailpit")
+                      } else {
+                        setEmailProvider("Gmail")
+                      }
+                    }}
+                    className="w-4 h-4 rounded border-white/10 text-primary bg-black/40 focus:ring-primary cursor-pointer"
+                  />
                 </div>
-                <input 
-                  type="checkbox"
-                  checked={useDevMode}
-                  onChange={(e) => {
-                    const checked = e.target.checked
-                    setUseDevMode(checked)
-                    if (checked) {
-                      setEmailProvider("Mailpit")
-                    } else {
-                      setEmailProvider("Gmail")
-                    }
-                  }}
-                  className="w-4 h-4 rounded border-white/10 text-primary bg-black/40 focus:ring-primary cursor-pointer"
-                />
-              </div>
+              )}
 
               {/* Provider */}
               {!useDevMode && (
